@@ -18,7 +18,8 @@ def home():
     #         db.session.add(new_note) #adding the note to the database
     #         db.session.commit()
     #         flash('Note added!', category='success')
-
+    if request.method == 'POST':
+        feed = request.get
     return render_template("home.html", user=current_user)
 
 @views.route('/profile')
