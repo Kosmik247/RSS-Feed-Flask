@@ -8,11 +8,11 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-   
-    feedURL = 'http://feeds.bbci.co.uk/news/health/rss.xml'
+
+    feedURL = 'http://rss.cnn.com/rss/edition_technology.rss'
     feed = feedparser.parse(feedURL)
     article = feed['entries']
-  
+
     for article in feed['entries']:
         print(article.get("title"))
         print(article.get("description"))

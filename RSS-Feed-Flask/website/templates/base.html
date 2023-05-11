@@ -35,10 +35,12 @@
                     <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
                     {% endif %}
                 </div>
+            {% if user.is_authenticated %}
                 <div class="navbar-nav ms-auto">
                     <a class="nav-item nav-link " id="profile" href="/profile">Profile: Welcome {{user.first_name}}</a>
                 </div>
-                  
+            {% endif %}
+
             </div>
         </nav>
 
