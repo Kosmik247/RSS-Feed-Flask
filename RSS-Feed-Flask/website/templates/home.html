@@ -36,30 +36,14 @@
           <h1 class="h2">Dashboard</h1>
         </div>
 
-{#        {% for article in feeds %}#}
-{#        <div class="feed">#}
-{#        <a href="{{ article.get('link') }}"><strong>{{ article.get('title') }} </strong><br>#}
-{#            {{ article.get('description') }}#}
-{#        </a>#}
-{#        </div>#}
-{#          #}
-{#            <div class="col-sm-6">#}
-{#                <div class="card" style="width: 18rem;">#}
-{#                    <img class="card-img-top" src="..." alt="Article Image">#}
-{#                    <div class="card-body">#}
-{#                        <h5 class="card-title">{{ article.get('title') }}</h5><p class="card-text">{{ article.get('description') }}</p><a href="{{ article.get('link') }}" class="btn btn-primary">Go to article</a>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
-{#      #}
-{#        {% endfor %}#}
-
           <div class="row">
           {% for article in feeds %}
+          
           <div class="col-sm-6">
             <div class="card">
               <div class="card-body">
-                <img class="card-img-right" src="https://herohighgate.fireflycloud.net/profilepic.aspx?guid=DB:Cloud:DB:SIMSstu:7557" alt="Article Image">
+                <img class="card-img-right" src="{{ article.get('media') }}" alt="{{article.get('media')}}">
+                
                 <h5 class="card-title">{{ article.get('title') }}</h5>
                 <p class="card-text">{{ article.get('description') }}</p>
                 <a href="{{ article.get('link') }}" class="btn btn-primary">Go to article</a>
