@@ -10,15 +10,22 @@
         <div>
           <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
             <span>Saved Websites</span>
-            <a class="d-flex align-items-center text-muted" href="/add_website">
+            <a class="d-flex align-items-center text-muted" href="#">
               <span data-feather="plus-circle"></span>
             </a>
           </h6>
           <ul class="nav flex-column mb-2">
-            <div class="form-group">
-                <input placeholder="Add a website.">
-                <button type="submit" class="btn btn-primary">Add</button>
+            <div>
+                <form action="/add_website" method="POST">
+                    <input placeholder="Add a website." name="website">
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
             </div>
+          </ul>
+          <ul class="list-group list-group-flush" id="feeds">
+              {% for feed in user.feeds %}
+                  <li class="list-group-item"> {{ feed.link }}</li>
+              {% endfor %}
           </ul>
         </div>
       </nav>

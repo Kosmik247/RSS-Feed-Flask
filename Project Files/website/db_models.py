@@ -16,7 +16,7 @@ class User(db.Model, UserMixin):
 class RSS_Data(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
-    title = db.Column(db.String(10000))
-    content = db.Column(db.String(10000))
+    #title = db.Column(db.String(10000))
+    #content = db.Column(db.String(10000))
     link = db.Column(db.String(10000))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
