@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{%  block title %}Websites{% endblock %}
+
+{%  block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap pt-3 pb-2 mb-3 border-bottom">
+    <h1 style="text-align: center" >Websites</h1>
+</div>
+<ul class="list-group list-group-flush" id="website_add">
+    {% for website in user.feeds %}
+        <li class="list-group-item">{{ website.title }}: {{ website.link }}</li>
+    {% endfor %}
+</ul>
+<form method="POST">
+    <div class="form-group">
+        <label for="web_title">Website Title</label>
+        <input type="text" class="form-control" id="web_title" name="web_title" placeholder="Enter Website Title"/>
+    </div>
+    <div class="form-group">
+        <label for="web_link">RSS Link</label>
+        <input type="text" class="form-control" id="web_link" name="web_link" placeholder="Enter Website RSS Link"/>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Link</button>
+
+</form>
+
+{% endblock %}
+
+
+
