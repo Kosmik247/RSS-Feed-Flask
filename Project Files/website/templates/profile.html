@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+    <h1 style="text-align: center">Profile</h1>
+    {% if user.is_authenticated %}
+        <div class="navbar-nav ms-auto">
+            <a class="nav-item nav-link" id="profile" href="/profile">Profile: Welcome {{ user.name }}</a>
+        </div>
+    {% endif %}
+{% endblock %}
