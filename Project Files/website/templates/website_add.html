@@ -7,7 +7,10 @@
 </div>
 <ul class="list-group list-group-flush" id="website_add">
     {% for website in user.feeds %}
-        <li class="list-group-item">{{ website.title }}: {{ website.link }}</li>
+        <li class="list-group-item">
+            <h6>Title: {{ website.title }}</h6>
+            <h6>Link: {{ website.link }}</h6>
+        </li>
     {% endfor %}
 </ul>
 <form method="POST">

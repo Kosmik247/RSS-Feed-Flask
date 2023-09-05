@@ -58,9 +58,14 @@ def add_links():
     if request.method == 'POST':
         website_title = request.form.get('web_title')
         website_link = request.form.get('web_link')
-        new_link = RSS_Data(title=website_title,link=website_link,user_id=current_user.id)
-        db.session.add(new_link)
-        db.session.commit()
+
+        website_existence = RSS_Data.query.filter_by(title=website_title).first()
+        if website_existence:
+            flash('This title already exists', category='error')
+        else:
+            new_link = RSS_Data(title=website_title, link=website_link,user_id=current_user.id)
+            db.session.add(new_link)
+            db.session.commit()
 
     return render_template("website_add.html", user=current_user)
 
