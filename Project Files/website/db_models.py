@@ -18,6 +18,11 @@ class RSS_Data(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     title = db.Column(db.String(10000))
-    #content = db.Column(db.String(10000))
     link = db.Column(db.String(10000))
+    liked = db.relationship('Readlist')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
+class Readlist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    rss_data_id = db.Column(db.Integer, db.ForeignKey('website.id'))
