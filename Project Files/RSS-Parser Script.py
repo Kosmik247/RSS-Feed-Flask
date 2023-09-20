@@ -1,8 +1,8 @@
 import feedparser
-
+# Iport library used for parsing module
 feedURL = 'http://feeds.bbci.co.uk/news/health/rss.xml'
 
-
+# Testing function to obtain elements of parser I require.
 def print_news():
   feed = feedparser.parse(feedURL)
   article = feed['entries'][0]
