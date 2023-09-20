@@ -53,6 +53,25 @@ def profile():
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
+     """A function that is called when a user wants to create an account.
+
+    Variables
+    ----------
+    email : str
+        email to be stored to associated user
+    first_name : str
+        name to be stored to associated user    
+    password_1 : str
+        password to be stored to associated user
+    password_2 : str
+        a verification variable to check password 1 is the correct password  
+    new_user : str
+        the new user to be added to the database if all checks run correctly
+    Returns
+    -------
+    None: Returns user to home page
+
+    """
     if request.method == 'POST':
         email = request.form.get('email')
         first_name = request.form.get('first_name')
