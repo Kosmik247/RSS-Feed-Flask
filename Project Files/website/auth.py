@@ -53,7 +53,7 @@ def profile():
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
-     """A function that is called when a user wants to create an account.
+    """A function that is called when a user wants to create an account.
 
     Variables
     ----------
