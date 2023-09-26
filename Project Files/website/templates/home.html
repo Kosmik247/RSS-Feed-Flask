@@ -44,7 +44,12 @@
                 <h5 class="card-title">{{ article.get('title') }}</h5>
                 <p class="card-text">{{ article.get('description') }}</p>
                 <a href="{{ article.get('link') }}" class="btn btn-primary">Go to article</a>
-                  <button class="btn btn-secondary" id="like">Like (NON FUNCTIONAL)</button>
+                <form action="/" method="POST">
+                    <button name="like_article" class="btn btn-secondary" type="submit">
+                        <input type="hidden" name="like_article" value="{{ article.get('title') }}"/>
+                        LIKE (NON FUNCTIONAL)
+                    </button>
+                </form>
               </div>
             </div>
           </div>
