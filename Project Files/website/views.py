@@ -58,10 +58,10 @@ def add_links():
             website_link = request.form.get('web_link')
 
             website_existence = RSS_Data.query.filter_by(title=website_title).first()
-            if website_existence and current_user.id == website_existence.id:
+            if website_existence and current_user.id == website_existence.user_id:
                 flash('This title already exists', category='error')
             else:
-                new_link = RSS_Data(title=website_title, link=website_link,user_id=current_user.id)
+                new_link = RSS_Data(title=website_title, link=website_link, user_id=current_user.id)
                 db.session.add(new_link)
                 db.session.commit()
 
