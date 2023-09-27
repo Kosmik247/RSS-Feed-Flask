@@ -42,12 +42,20 @@
 
 
                 <h5 class="card-title">{{ article.get('title') }}</h5>
-                <p class="card-text">{{ article.get('description') }}</p>
+                  {% if article.get('description') == None %}
+                      <p class="card-text">No description for the article could be found.</p>
+                  {% else %}
+                      <p class="card-text">{{ article.get('description') }}</p>
+                  {% endif %}
+
                 <a href="{{ article.get('link') }}" class="btn btn-primary">Go to article</a>
-                <form action="/" method="POST">
-                    <button name="like_article" class="btn btn-secondary" type="submit">
-                        <input type="hidden" name="like_article" value="{{ article.get('title') }}"/>
-                        LIKE (NON FUNCTIONAL)
+                  <form action="/" method="POST">
+                    <button name="article_title" class="btn btn-secondary" type="submit" value="{{ article.get('title') }}">
+                        <input type="hidden" name="article_link" value="{{ article.get('link') }}"/>
+                        <input type="hidden" name="article_desc" value="{{ article.get('description') }}"/>
+                        <input type="hidden" name="source_link" value="{{ website }}"/>
+
+                        LIKE
                     </button>
                 </form>
               </div>

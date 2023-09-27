@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, jsonify
 from flask_login import login_required, current_user
 import feedparser
 from . import db
-from .db_models import RSS_Data
+from .db_models import RSS_Data, Readlist
 
 views = Blueprint('views', __name__)
 
@@ -14,9 +14,10 @@ def home():
     website_link = 'None'
 
     if request.method == 'POST':
+
+
         if "feed_id" in request.form:
             website_title = request.form.get('feed_id')
-
             website = RSS_Data.query.filter_by(title=website_title).first()
             if website:
                 website_link = website.link
@@ -26,16 +27,26 @@ def home():
                 print("No websites stored in database.")
                 website_link = "None"
 
-        if "like_article" in request.form:
-            value = request.form.get('value')
-            print(value)
-    feed = feedparser.parse(website_link)
-    # for article in feed['entries']:
-    #     print(article.get("title"))
-    #     print(article.get("description"))
-    #     print(article.get("link"))
+        if "article_title" in request.form:
+            title = request.form.get('article_title')
+            website_link = request.form.get('source_link')
+            existing_article = Readlist.query.filter_by(art_title=title).first()
+            if existing_article and existing_article.user_id == current_user.id:
+                flash('Article already saved', category='error')
+            else:
 
-    return render_template("home.html", user=current_user, feeds=feed['entries'])
+                link = request.form.get('article_link')
+                description = request.form.get('article_desc')
+                saved_article = Readlist(art_title=title, art_desc=description, art_link=link, user_id=current_user.id)
+                db.session.add(saved_article)
+                db.session.commit()
+
+
+
+    feed = feedparser.parse(website_link)
+
+
+    return render_template("home.html", user=current_user, feeds=feed['entries'], website=website_link)
 
 
 @views.route('/delete-website', methods=['POST'])
@@ -73,3 +84,14 @@ def add_links():
                 db.session.commit()
 
     return render_template("website_add.html", user=current_user)
+
+@views.route('/read_later', methods=['GET','POST'])
+@login_required
+def read_later():
+    if request.method == 'POST':
+        if "unlike_article" in request.form:
+            article_id = request.form.get('unlike_article')
+            article_to_del = Readlist.query.get(article_id)
+            db.session.delete(article_to_del)
+            db.session.commit()
+    return render_template("read_later.html", user=current_user)

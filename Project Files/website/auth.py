@@ -74,7 +74,7 @@ def sign_up():
     """
     if request.method == 'POST':
         email = request.form.get('email')
-        first_name = request.form.get('first_name')
+        username = request.form.get('username')
         password_1 = request.form.get('password_1')
         password_2 = request.form.get('password_2')
 
@@ -83,14 +83,14 @@ def sign_up():
             flash('Email already exists.', category='error')
         elif len(email) < 4:
             flash('Email must be greater than 3 characters.', category='error')
-        elif len(first_name) < 2:
-            flash('First name must be greater than 1 character.', category='error')
+        elif len(username) < 2:
+            flash('Username must be greater than 1 character.', category='error')
         elif password_1 != password_2:
             flash('Passwords don\'t match.', category='error')
         elif len(password_1) < 7:
             flash('Password must be at least 7 characters.', category='error')
         else:
-            new_user = User(email=email, first_name=first_name, password=generate_password_hash(
+            new_user = User(email=email, username=username, password=generate_password_hash(
                 password_1, method='sha256'))
             db.session.add(new_user)
             db.session.commit()

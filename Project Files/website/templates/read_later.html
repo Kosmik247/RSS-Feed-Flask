@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Readlist{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap pt-3 pb-2 mb-3 border-bottom">
+        <h1>Websites: Read Later</h1>
+    </div>
+
+    <div class="row">
+        {% for article in user.liked %}
+
+            <div class="col-sm-5">
+                <div class="card">
+                    <div class="card-body">
+
+
+                        <h5 class="card-title">{{ article.art_title }}</h5>
+                        {% if article.art_desc == None %}
+                            <p class="card-text">No description for the article could be found.</p>
+                        {% else %}
+                            <p class="card-text">{{ article.art_desc }}</p>
+                        {% endif %}
+
+                        <a href="{{ article.art_link }}" class="btn btn-primary">Go to article</a>
+                        <form action="/read_later" method="POST">
+                            <button name="unlike_article" class="btn btn-danger" type="submit" value="{{ article.id }}">
+                                UNLIKE
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+{% endblock %}
