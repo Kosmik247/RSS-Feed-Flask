@@ -40,13 +40,9 @@ def home():
                 db.session.add(saved_article)
                 db.session.commit()
 
-
-
     feed = feedparser.parse(website_link)
 
-
     return render_template("home.html", user=current_user, feeds=feed['entries'], website=website_link)
-
 
 @views.route('/delete-website', methods=['POST'])
 @login_required
@@ -84,7 +80,8 @@ def add_links():
 
     return render_template("website_add.html", user=current_user)
 
-@views.route('/read_later', methods=['GET','POST'])
+
+@views.route('/read_later', methods=['GET', 'POST'])
 @login_required
 def read_later():
     if request.method == 'POST':
@@ -95,13 +92,14 @@ def read_later():
             db.session.commit()
     return render_template("read_later.html", user=current_user)
 
-@views.route('/discover', methods=['GET','POST'])
+
+@views.route('/discover', methods=['GET', 'POST'])
 @login_required
 def discover():
     websites = RSS_Data.query.all()
-    public_websites = {}
+    grouped_websites = []
     for website in websites:
-        if website.user_id == None:
+        if website.user_id is None:
             website_existing = False
             for saved_website in current_user.feeds:
 
@@ -109,23 +107,41 @@ def discover():
                     website_existing = True
 
             if website_existing != True:
-
+                related_articles = [f"{website.title}"]
                 website_link = website.link
                 feed = feedparser.parse(website_link)
                 individual_articles = feed['entries'][0:4]
+                # Stores individual articles as a dictionary in a list, this list is associated with its source link title
                 for article in individual_articles:
-                    public_websites.update({f'{website.title}': {article}})
+                    # Try and except to catch out missing description discrepancies between sites
+                    try:
+                        individual_articles_temp = {'title': f'{article.title}', 'desc': f'{article.description}','link':f'{article.link}'}
+                    except AttributeError:
+                        individual_articles_temp = {'title': f'{article.title}', 'desc': f'No Description could be found for this article.','link': f'{article.link}'}
+                    related_articles.append(individual_articles_temp)
 
-                print(website.title)
+                # Global grouped sources list that gets passed through to front end
+                grouped_websites.append(related_articles)
+
             else:
                 print("Website already saved and will not show in discover page")
 
-    # for website in public_websites:
-    #     articles = public_websites[website]
-    #     print(articles)
+
+    if request.method == 'POST':
+        if "article_title" in request.form:
+            title = request.form.get('article_title')
+            existing_article = Readlist.query.filter_by(art_title=title).first()
+            if existing_article and existing_article.user_id == current_user.id:
+                flash('Article already saved', category='error')
+            else:
+
+                link = request.form.get('article_link')
+                description = request.form.get('article_desc')
+                saved_article = Readlist(art_title=title, art_desc=description, art_link=link, user_id=current_user.id)
+                db.session.add(saved_article)
+                db.session.commit()
+        if "add_discovery_feed" in request.form:
+            print("added")
 
 
-
-
-
-    return render_template("discover.html", user=current_user, undiscovered_websites = public_websites)
+    return render_template("discover.html", user=current_user, discovery=grouped_websites)
