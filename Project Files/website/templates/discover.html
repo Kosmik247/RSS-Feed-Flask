@@ -3,19 +3,20 @@
 {% block content %}
     <main role="main" class="col">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-left pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">News Feed</h1>
+          <h1 class="h1">News Feed</h1>
         </div>
 
           <div class="row">
           {% for website in undiscovered_websites %}
-{#              {% for article in website.keys %}#}
+              <h4 class="h4">{{ website }}</h4>
+              {% for article in undiscovered_websites[website] %}
 
-          <div class="col-sm-5">
-            <div class="card">
-              <div class="card-body">
+                  <div class="col-sm-5">
+                    <div class="card">
+                      <div class="card-body">
 
 
-                <h5 class="card-title">{{ article }}</h5>
+                        <h5 class="card-title">{{ article }}</h5>
 {#                  {% if article.get('description') == None %}#}
 {#                      <p class="card-text">No description for the article could be found.</p>#}
 {#                  {% else %}#}

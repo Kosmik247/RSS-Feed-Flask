@@ -15,7 +15,6 @@ def home():
 
     if request.method == 'POST':
 
-
         if "feed_id" in request.form:
             website_title = request.form.get('feed_id')
             website = RSS_Data.query.filter_by(title=website_title).first()
@@ -113,15 +112,18 @@ def discover():
 
                 website_link = website.link
                 feed = feedparser.parse(website_link)
-                element = feed['entries'][0:4]
-
-
-                public_websites.update({f'{website.title}': f'{element}'})
+                individual_articles = feed['entries'][0:4]
+                for article in individual_articles:
+                    public_websites.update({f'{website.title}': {article}})
 
                 print(website.title)
             else:
                 print("Website already saved and will not show in discover page")
-    print(public_websites)
+
+    # for website in public_websites:
+    #     articles = public_websites[website]
+    #     print(articles)
+
 
 
 
