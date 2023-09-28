@@ -1,1 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Discover{% endblock %}
+{% block content %}
+    <main role="main" class="col">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-left pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2">News Feed</h1>
+        </div>
 
+          <div class="row">
+          {% for website in undiscovered_websites %}
+{#              {% for article in website.keys %}#}
+
+          <div class="col-sm-5">
+            <div class="card">
+              <div class="card-body">
+
+
+                <h5 class="card-title">{{ article }}</h5>
+{#                  {% if article.get('description') == None %}#}
+{#                      <p class="card-text">No description for the article could be found.</p>#}
+{#                  {% else %}#}
+{#                      <p class="card-text">{{ article.get('description') }}</p>#}
+{#                  {% endif %}#}
+
+{#                <a href="{{ article.get('link') }}" class="btn btn-primary">Go to article</a>#}
+{#                  <form action="/" method="POST">#}
+{#                    <button name="article_title" class="btn btn-secondary" type="submit" value="{{ article.get('title') }}">#}
+{#                        <input type="hidden" name="article_link" value="{{ article.get('link') }}"/>#}
+{#                        <input type="hidden" name="article_desc" value="{{ article.get('description') }}"/>#}
+{#                        <input type="hidden" name="source_link" value="{{ website }}"/>#}
+{#                        Add to reading list#}
+{#                    </button>#}
+{#                </form>#}
+              </div>
+            </div>
+          </div>
+              {% endfor %}
+            {% endfor %}
+        </div>
+      </main>
+{% endblock %}

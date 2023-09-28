@@ -95,3 +95,35 @@ def read_later():
             db.session.delete(article_to_del)
             db.session.commit()
     return render_template("read_later.html", user=current_user)
+
+@views.route('/discover', methods=['GET','POST'])
+@login_required
+def discover():
+    websites = RSS_Data.query.all()
+    public_websites = {}
+    for website in websites:
+        if website.user_id == None:
+            website_existing = False
+            for saved_website in current_user.feeds:
+
+                if saved_website.title == website.title:
+                    website_existing = True
+
+            if website_existing != True:
+
+                website_link = website.link
+                feed = feedparser.parse(website_link)
+                element = feed['entries'][0:4]
+
+
+                public_websites.update({f'{website.title}': f'{element}'})
+
+                print(website.title)
+            else:
+                print("Website already saved and will not show in discover page")
+    print(public_websites)
+
+
+
+
+    return render_template("discover.html", user=current_user, undiscovered_websites = public_websites)
