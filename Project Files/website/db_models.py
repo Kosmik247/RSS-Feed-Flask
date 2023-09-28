@@ -29,8 +29,8 @@ class Readlist(db.Model):
     art_link = db.Column(db.String(10000))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-class Visits(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    website_source = db.Column(db.string(10000))
-    visit_count = db.Column(db.Integer)
+# class Visits(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+#     website_source = db.Column(db.string(10000))
+#     visit_count = db.Column(db.Integer)
