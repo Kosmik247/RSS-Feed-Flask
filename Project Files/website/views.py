@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, jsonify
 from flask_login import login_required, current_user
 import feedparser
 from . import db
-from .db_models import RSS_Data, Readlist
+from .db_models import RSS_Data, Readlist, Tags
 
 views = Blueprint('views', __name__)
 
@@ -19,6 +19,8 @@ def home():
             website_title = request.form.get('feed_id')
             website = RSS_Data.query.filter_by(title=website_title).first()
             if website:
+
+                print(website.tag.name)
                 website_link = website.link
                 print(website_link)
 
@@ -44,6 +46,7 @@ def home():
 
     return render_template("home.html", user=current_user, feeds=feed['entries'], website=website_link)
 
+
 @views.route('/delete-website', methods=['POST'])
 @login_required
 def delete_website():
@@ -65,6 +68,8 @@ def delete_website():
 @views.route('/add_links', methods=['GET', 'POST'])
 @login_required
 def add_links():
+    tags_list = Tags.query.all()
+
     if request.method == 'POST':
         if "add_link" in request.form:
             website_title = request.form.get('web_title')
@@ -78,7 +83,7 @@ def add_links():
                 db.session.add(new_link)
                 db.session.commit()
 
-    return render_template("website_add.html", user=current_user)
+    return render_template("website_add.html", user=current_user,tags=tags_list)
 
 
 @views.route('/read_later', methods=['GET', 'POST'])
@@ -96,37 +101,6 @@ def read_later():
 @views.route('/discover', methods=['GET', 'POST'])
 @login_required
 def discover():
-    websites = RSS_Data.query.all()
-    grouped_websites = []
-    for website in websites:
-        if website.user_id is None:
-            website_existing = False
-            for saved_website in current_user.feeds:
-
-                if saved_website.title == website.title:
-                    website_existing = True
-
-            if website_existing != True:
-                related_articles = [f"{website.title}"]
-                website_link = website.link
-                feed = feedparser.parse(website_link)
-                individual_articles = feed['entries'][0:4]
-                # Stores individual articles as a dictionary in a list, this list is associated with its source link title
-                for article in individual_articles:
-                    # Try and except to catch out missing description discrepancies between sites
-                    try:
-                        individual_articles_temp = {'title': f'{article.title}', 'desc': f'{article.description}','link':f'{article.link}'}
-                    except AttributeError:
-                        individual_articles_temp = {'title': f'{article.title}', 'desc': f'No Description could be found for this article.','link': f'{article.link}'}
-                    related_articles.append(individual_articles_temp)
-
-                # Global grouped sources list that gets passed through to front end
-                grouped_websites.append(related_articles)
-
-            else:
-                print("Website already saved and will not show in discover page")
-
-
     if request.method == 'POST':
         if "article_title" in request.form:
             title = request.form.get('article_title')
@@ -140,8 +114,46 @@ def discover():
                 saved_article = Readlist(art_title=title, art_desc=description, art_link=link, user_id=current_user.id)
                 db.session.add(saved_article)
                 db.session.commit()
-        if "add_discovery_feed" in request.form:
-            print("added")
 
+        if "add_discovery_feed" in request.form:
+            title = request.form.get('add_discovery_feed')
+            link = request.form.get('source_link')
+            article_to_add = RSS_Data(title=request.form.get('add_discovery_feed'),
+                                      link=request.form.get('source_link'), user_id=current_user.id)
+            db.session.add(article_to_add)
+            db.session.commit()
+
+    websites = RSS_Data.query.all()
+    grouped_websites = []
+    for website in websites:
+        if website.user_id is None:
+            website_existing = False
+            for saved_website in current_user.feeds:
+
+                if saved_website.title == website.title:
+                    website_existing = True
+
+            if website_existing != True:
+                website_link = website.link
+                related_articles = [f"{website.title}", f"{website_link}"]
+                feed = feedparser.parse(website_link)
+                individual_articles = feed['entries'][0:4]
+                # Stores individual articles as a dictionary in a list, this list is associated with its source link title
+                for article in individual_articles:
+                    # Try and except to catch out missing description discrepancies between sites
+                    try:
+                        individual_articles_temp = {'title': f'{article.title}', 'desc': f'{article.description}',
+                                                    'link': f'{article.link}'}
+                    except AttributeError:
+                        individual_articles_temp = {'title': f'{article.title}',
+                                                    'desc': f'No Description could be found for this article.',
+                                                    'link': f'{article.link}'}
+                    related_articles.append(individual_articles_temp)
+
+                # Global grouped sources list that gets passed through to front end
+                grouped_websites.append(related_articles)
+
+            else:
+                print("Website already saved and will not show in discover page")
 
     return render_template("discover.html", user=current_user, discovery=grouped_websites)

@@ -12,7 +12,8 @@
                     <h4 class="h4">Website: {{ website[0] }}</h4>
 
                     <form method="POST">
-                        <button name="add_discovery_feed"  class="btn-secondary">Add to personal feed</button>
+                        <button name="add_discovery_feed"  class="btn-secondary" value="{{ website[0] }}">Add to personal feed</button>
+                                        <input type="hidden" name="source_link" value="{{ website[1] }}">
                     </form>
 
                 </div>
@@ -24,7 +25,7 @@
 
 
 
-                {% for article in website[1:] %}
+                {% for article in website[2:] %}
 
                     <div class="col-sm-5">
                         <div class="card">

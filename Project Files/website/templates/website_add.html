@@ -28,6 +28,18 @@
         <label for="web_link">RSS Link</label>
         <input type="text" class="form-control" id="web_link" name="web_link" placeholder="Enter Website RSS Link"/>
     </div>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="inputGroupTags">Tags:</label>
+      </div>
+      <select class="custom-select" id="inputGroupTags">
+        <option selected>None</option>
+          {% for tag in tags %}
+            <option value="{{ tag.id }}">{{ tag.name }}</option>
+          {% endfor %}
+
+      </select>
+    </div>
     <button type="submit" class="btn btn-primary" name="add_link">Add Link</button>
 
 </form>
