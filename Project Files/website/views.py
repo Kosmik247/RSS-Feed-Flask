@@ -12,14 +12,24 @@ views = Blueprint('views', __name__)
 @login_required
 def home():
     website_link = 'None'
+    user_tags = []
+    global_tags = Tags.query.all()
+    user_saved_websites = RSS_Data.query.filter_by(user_id=current_user.id).all()
+    for user_web in user_saved_websites:
+        tags_format = {'tag_id': user_web.tag_id,
+                       'tag_name': f'{global_tags[user_web.tag_id - 1].name}'}
+        if tags_format not in user_tags:
+            user_tags.append(tags_format)
+
 
     if request.method == 'POST':
 
         if "feed_id" in request.form:
             website_title = request.form.get('feed_id')
-            website = RSS_Data.query.filter_by(title=website_title).first()
-            if website:
+            website = RSS_Data.query.filter_by(title=website_title, user_id=current_user.id).first()
 
+            if website:
+                print(website)
                 print(website.tag.name)
                 website_link = website.link
                 print(website_link)
@@ -43,8 +53,9 @@ def home():
                 db.session.commit()
 
     feed = feedparser.parse(website_link)
+    print(user_tags)
 
-    return render_template("home.html", user=current_user, feeds=feed['entries'], website=website_link)
+    return render_template("home.html", user=current_user, feeds=feed['entries'], website=website_link, tags=user_tags)
 
 
 @views.route('/delete-website', methods=['POST'])
@@ -74,12 +85,13 @@ def add_links():
         if "add_link" in request.form:
             website_title = request.form.get('web_title')
             website_link = request.form.get('web_link')
-
-            website_existence = RSS_Data.query.filter_by(title=website_title).first()
+            website_tag = request.form.get('web_tag')
+            print(website_tag)
+            website_existence = RSS_Data.query.filter_by(title=website_title, user_id=current_user.id).first()
             if website_existence and current_user.id == website_existence.user_id:
                 flash('This title already exists', category='error')
             else:
-                new_link = RSS_Data(title=website_title, link=website_link, user_id=current_user.id)
+                new_link = RSS_Data(title=website_title, link=website_link, tag_id=website_tag, user_id=current_user.id)
                 db.session.add(new_link)
                 db.session.commit()
 
@@ -119,7 +131,7 @@ def discover():
             title = request.form.get('add_discovery_feed')
             link = request.form.get('source_link')
             article_to_add = RSS_Data(title=request.form.get('add_discovery_feed'),
-                                      link=request.form.get('source_link'), user_id=current_user.id)
+                                      link=request.form.get('source_link'),tag_id=request.form.get('source_tag'), user_id=current_user.id)
             db.session.add(article_to_add)
             db.session.commit()
 
@@ -135,7 +147,7 @@ def discover():
 
             if website_existing != True:
                 website_link = website.link
-                related_articles = [f"{website.title}", f"{website_link}"]
+                related_articles = [f"{website.title}", f"{website_link}", f"{website.tag_id}"]
                 feed = feedparser.parse(website_link)
                 individual_articles = feed['entries'][0:4]
                 # Stores individual articles as a dictionary in a list, this list is associated with its source link title

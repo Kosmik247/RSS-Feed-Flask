@@ -10,6 +10,7 @@
         <li class="list-group-item">
             <h6>Title: {{ website.title }}</h6>
             <h6>Link: {{ website.link }}</h6>
+            <h6>Tags: {{ website.tag.name }}</h6>
             <form action="/delete-website" method="POST">
                 <button name="delete_link"id="{{ website.id }}" type="submit">
                     <input type="hidden" name="id" value="{{ website.id }}" />
@@ -32,13 +33,14 @@
       <div class="input-group-prepend">
         <label class="input-group-text" for="inputGroupTags">Tags:</label>
       </div>
-      <select class="custom-select" id="inputGroupTags">
-        <option selected>None</option>
-          {% for tag in tags %}
-            <option value="{{ tag.id }}">{{ tag.name }}</option>
-          {% endfor %}
 
-      </select>
+          <select class="custom-select" name="web_tag" id="inputGroupTags">
+            <option selected>None</option>
+              {% for tag in tags %}
+                <option value="{{ tag.id }}">{{ tag.name }}</option>
+              {% endfor %}
+
+          </select>
     </div>
     <button type="submit" class="btn btn-primary" name="add_link">Add Link</button>
 
