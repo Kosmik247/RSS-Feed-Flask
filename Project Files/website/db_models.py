@@ -29,6 +29,7 @@ class Readlist(db.Model):
     art_title = db.Column(db.String(10000))
     art_desc = db.Column(db.String(10000))
     art_link = db.Column(db.String(10000))
+    tag = db.Column(db.String(10000))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 class Tags(db.Model):

@@ -84,7 +84,10 @@
                     <button name="article_title" class="btn btn-secondary" type="submit" value="{{ article.get('title') }}">
                         <input type="hidden" name="article_link" value="{{ article.get('link') }}"/>
                         <input type="hidden" name="article_desc" value="{{ article.get('description') }}"/>
-                        <input type="hidden" name="source_link" value="{{ website }}"/>
+                        <h1>{{ website.tag.id }}</h1>
+                        <input type="hidden" name="source_link" value="{{ website.link }}"/>
+                        <input type="hidden" name="article_tag" value={{ website.tag.id }}/>
+                        <h1>{{ website.tag.id }}</h1>
                         Add to reading list
                     </button>
                 </form>

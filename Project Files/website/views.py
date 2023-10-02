@@ -12,6 +12,7 @@ views = Blueprint('views', __name__)
 @login_required
 def home():
     website_link = 'None'
+    website = None
     user_tags = []
     global_tags = Tags.query.all()
     user_saved_websites = RSS_Data.query.filter_by(user_id=current_user.id).all()
@@ -48,14 +49,16 @@ def home():
 
                 link = request.form.get('article_link')
                 description = request.form.get('article_desc')
-                saved_article = Readlist(art_title=title, art_desc=description, art_link=link, user_id=current_user.id)
+                tag_id = request.form.get('article_tag')
+                print(tag_id)
+                saved_article = Readlist(art_title=title, art_desc=description, art_link=link, tag=tag_id, user_id=current_user.id)
                 db.session.add(saved_article)
                 db.session.commit()
 
     feed = feedparser.parse(website_link)
     print(user_tags)
 
-    return render_template("home.html", user=current_user, feeds=feed['entries'], website=website_link, tags=user_tags)
+    return render_template("home.html", user=current_user, feeds=feed['entries'], website=website, tags=user_tags)
 
 
 @views.route('/delete-website', methods=['POST'])
@@ -95,7 +98,7 @@ def add_links():
                 db.session.add(new_link)
                 db.session.commit()
 
-    return render_template("website_add.html", user=current_user,tags=tags_list)
+    return render_template("website_add.html", user=current_user, tags=tags_list)
 
 
 @views.route('/read_later', methods=['GET', 'POST'])
