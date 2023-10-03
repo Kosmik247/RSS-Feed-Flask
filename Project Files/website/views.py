@@ -30,33 +30,38 @@ def home():
             website = RSS_Data.query.filter_by(title=website_title, user_id=current_user.id).first()
 
             if website:
-                print(website)
-                print(website.tag.name)
+                # print(website)
+                # print(website.tag.name)
                 website_link = website.link
-                print(website_link)
+                # print(website_link)
 
             else:
                 print("No websites stored in database.")
                 website_link = "None"
 
-        if "article_title" in request.form:
+        if "art_tag_id" in request.form:
+            tag_id = request.form.get('art_tag_id')
             title = request.form.get('article_title')
-            website_link = request.form.get('source_link')
+            description = request.form.get('article_desc')
+            article_link = request.form.get('article_link')
+            print(tag_id)
+
+
             existing_article = Readlist.query.filter_by(art_title=title).first()
             if existing_article and existing_article.user_id == current_user.id:
                 flash('Article already saved', category='error')
             else:
 
-                link = request.form.get('article_link')
-                description = request.form.get('article_desc')
-                tag_id = request.form.get('article_tag')
-                print(tag_id)
-                saved_article = Readlist(art_title=title, art_desc=description, art_link=link, tag=tag_id, user_id=current_user.id)
+
+
+
+                saved_article = Readlist(art_title=title, art_desc=description, art_link=article_link,tag=tag_id, user_id=current_user.id)
+                print(saved_article)
                 db.session.add(saved_article)
                 db.session.commit()
 
     feed = feedparser.parse(website_link)
-    print(user_tags)
+
 
     return render_template("home.html", user=current_user, feeds=feed['entries'], website=website, tags=user_tags)
 
@@ -104,13 +109,22 @@ def add_links():
 @views.route('/read_later', methods=['GET', 'POST'])
 @login_required
 def read_later():
+    user_tags = []
+    global_tags = Tags.query.all()
+    user_saved_websites = RSS_Data.query.filter_by(user_id=current_user.id).all()
+    for user_web in user_saved_websites:
+        tags_format = {'tag_id': user_web.tag_id,
+                       'tag_name': f'{global_tags[user_web.tag_id - 1].name}'}
+        if tags_format not in user_tags:
+            user_tags.append(tags_format)
+
     if request.method == 'POST':
         if "unlike_article" in request.form:
             article_id = request.form.get('unlike_article')
             article_to_del = Readlist.query.get(article_id)
             db.session.delete(article_to_del)
             db.session.commit()
-    return render_template("read_later.html", user=current_user)
+    return render_template("read_later.html", user=current_user, tags=user_tags)
 
 
 @views.route('/discover', methods=['GET', 'POST'])

@@ -16,30 +16,26 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-              </li>
+              {% for tag in tags %}
               <li class="nav-item">
-                <a class="nav-link" href="#">Features</a>
+                <a class="nav-link" href="#">{{ tag.tag_name }}</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
-              </li>
+                {% endfor %}
             </ul>
-        <span class="navbar-text">
-          Navbar text with an inline element
-        </span>
+
       </div>
     </nav>
     </h3>
     <div class="row">
+    {% for tag in tags %}
+        <h3>{{ tag.tag_name }}</h3>
         {% for article in user.liked %}
-
-            <div class="col-sm-5">
+            <h6>{{ article.tag }}</h6>
+            <h6>{{ tag.tag_id }}</h6>
+            {% if article.tag == tag.tag_id %}
+                <div class="col-sm-5">
                 <div class="card">
                     <div class="card-body">
-
-
                         <h5 class="card-title">{{ article.art_title }}</h5>
                         {% if article.art_desc == None %}
                             <p class="card-text">No description for the article could be found.</p>
@@ -56,5 +52,11 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
+
+
+
+
         {% endfor %}
+    {% endfor %}
 {% endblock %}
