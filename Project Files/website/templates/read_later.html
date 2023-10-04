@@ -15,48 +15,55 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarText">
+          <form action="/read_later" method="POST">
             <ul class="navbar-nav mr-auto">
-              {% for tag in tags %}
-              <li class="nav-item">
-                <a class="nav-link" href="#">{{ tag.tag_name }}</a>
-              </li>
+
+                <li class="nav-item">
+                        <button class="btn btn-outline-dark btn-lg" type="submit"value="{{ None }}">All</button>
+                    </li>
+                {% for tag in tags %}
+                    <li class="nav-item">
+                        <button name="unlike_article" class="btn btn-outline-dark btn-lg" type="submit" value={{ tag.tag_id }}>
+                            {{ tag.tag_name }} NON FUNCTIONAL
+                        </button>
+                    </li>
                 {% endfor %}
             </ul>
-
+     </form>
       </div>
     </nav>
     </h3>
     <div class="row">
-    {% for tag in tags %}
+    {% for tag in tags%}
         <h3>{{ tag.tag_name }}</h3>
-        {% for article in user.liked %}
-            <h6>{{ article.tag }}</h6>
-            <h6>{{ tag.tag_id }}</h6>
-            {% if article.tag == tag.tag_id %}
-                <div class="col-sm-5">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ article.art_title }}</h5>
-                        {% if article.art_desc == None %}
-                            <p class="card-text">No description for the article could be found.</p>
-                        {% else %}
-                            <p class="card-text">{{ article.art_desc }}</p>
+
+
+
+                    {% for article in user.liked %}
+                        {% if article.tag == tag['tag_id'] %}
+                            <div class="col-sm-5">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ article.art_title }}</h5>
+                                    {% if article.art_desc == None %}
+                                        <p class="card-text">No description for the article could be found.</p>
+                                    {% else %}
+                                        <p class="card-text">{{ article.art_desc }}</p>
+                                    {% endif %}
+
+                                    <a href="{{ article.art_link }}" class="btn btn-primary">Go to article</a>
+                                    <form action="/read_later" method="POST">
+                                        <button name="unlike_article" class="btn btn-danger" type="submit" value="{{ article.id }}">
+                                            Remove from reading list
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                         {% endif %}
 
-                        <a href="{{ article.art_link }}" class="btn btn-primary">Go to article</a>
-                        <form action="/read_later" method="POST">
-                            <button name="unlike_article" class="btn btn-danger" type="submit" value="{{ article.id }}">
-                                Remove from reading list
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
-
-
-
-        {% endfor %}
-    {% endfor %}
+                    {% endfor %}
+                {% endfor %}
+        </div>
+    </div>
 {% endblock %}

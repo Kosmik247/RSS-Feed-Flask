@@ -124,6 +124,8 @@ def read_later():
             article_to_del = Readlist.query.get(article_id)
             db.session.delete(article_to_del)
             db.session.commit()
+
+
     return render_template("read_later.html", user=current_user, tags=user_tags)
 
 
