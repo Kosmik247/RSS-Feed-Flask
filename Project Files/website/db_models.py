@@ -19,6 +19,7 @@ class RSS_Data(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(10000))
     link = db.Column(db.String(10000))
+    clicks = db.Column(db.Integer)
     tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'))
     tag = db.Relationship('Tags', back_populates='website')
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

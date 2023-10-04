@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 import feedparser
 from . import db
 from .db_models import RSS_Data, Readlist, Tags
-
+from .rec_alg import test_alg
 views = Blueprint('views', __name__)
 
 
@@ -11,9 +11,11 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
+    test_alg()
     website_link = 'None'
     website = None
     user_tags = []
+
     global_tags = Tags.query.all()
     user_saved_websites = RSS_Data.query.filter_by(user_id=current_user.id).all()
     for user_web in user_saved_websites:
