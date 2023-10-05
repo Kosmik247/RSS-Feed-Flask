@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 import feedparser
 from . import db
 from .db_models import RSS_Data, Readlist, Tags
-from .rec_alg import test_alg
+# from .rec_alg import test_alg
 views = Blueprint('views', __name__)
 
 
@@ -11,7 +11,7 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    test_alg()
+    # test_alg()
     website_link = 'None'
     website = None
     user_tags = []
@@ -126,7 +126,12 @@ def read_later():
             article_to_del = Readlist.query.get(article_id)
             db.session.delete(article_to_del)
             db.session.commit()
-
+        if "filter_article" in request.form:
+            tag_filter = request.form.get('filter_article')
+            print(tag_filter)
+            user_tags = [{'tag_id': int(tag_filter),
+                          'tag_name': f'{global_tags[int(tag_filter)-1].name}'}]
+            print(user_tags)
 
     return render_template("read_later.html", user=current_user, tags=user_tags)
 
