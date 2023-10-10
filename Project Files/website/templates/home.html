@@ -23,6 +23,7 @@
               <div class="panel panel-default">
                 <div class="panel-heading ">
                   <h6 class="panel-title px-3 mt-4">
+                      <h7>{{ clicks }}</h7>
                     <a data-toggle="collapse" href="#collapse{{ tag['tag_id'] }}" class="show text-muted">
                         <span>{{ tag['tag_name'] }}</span>
                         <span data-feather="chevron-down" class="text-muted "></span>
@@ -35,9 +36,10 @@
                       {% for feed in user.feeds %}
 
                           {% if feed.tag_id == tag['tag_id']%}
-
+                             <h6>{{ feed.id }}</h6>
                               <li class="list-group-item">
                               <button type="submit" class="btn btn-link border" name="feed_id" value="{{ feed.title }}">{{ feed.title }}</button>
+                                <input type="hidden" name="website_id" value="{{ feed.id }}"/>
                             </li>
                           <!-- Modifying the attribute btn btn-link will change what type of button appears for each individual website.-->
                           {% endif %}
@@ -83,6 +85,7 @@
                         <input type="hidden" name="article_title" value="{{ article.get('title') }}"/>
                         <input type="hidden" name="article_link" value="{{ article.get('link') }}"/>
                         <input type="hidden" name="article_desc" value="{{ article.get('description') }}"/>
+                        <input type="hidden" name="website_id" value="{{ feed.id }}"/>
 
 
                         Add to reading list

@@ -15,10 +15,15 @@ def home():
     website_link = 'None'
     website = None
     user_tags = []
+    click_counts = []
 
     global_tags = Tags.query.all()
     user_saved_websites = RSS_Data.query.filter_by(user_id=current_user.id).all()
+
     for user_web in user_saved_websites:
+        web_clicks = {'web_id': user_web.id,
+                      'click_count':{user_web.clicks}}
+        click_counts.append(web_clicks)
         tags_format = {'tag_id': user_web.tag_id,
                        'tag_name': f'{global_tags[user_web.tag_id - 1].name}'}
         if tags_format not in user_tags:
@@ -26,8 +31,12 @@ def home():
 
 
     if request.method == 'POST':
-
+        website_id = request.form.get('website_id')
+        #individual_clicks = filter(lambda website: website['web_id'] )
+        print(click_counts)
         if "feed_id" in request.form:
+
+
             website_title = request.form.get('feed_id')
             website = RSS_Data.query.filter_by(title=website_title, user_id=current_user.id).first()
 
@@ -65,7 +74,7 @@ def home():
     feed = feedparser.parse(website_link)
 
 
-    return render_template("home.html", user=current_user, feeds=feed['entries'], website=website, tags=user_tags)
+    return render_template("home.html", user=current_user, feeds=feed['entries'], website=website, tags=user_tags, clicks=click_counts)
 
 
 @views.route('/delete-website', methods=['POST'])
