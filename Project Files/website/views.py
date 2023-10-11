@@ -22,7 +22,7 @@ def home():
 
     for user_web in user_saved_websites:
         web_clicks = {'web_id': user_web.id,
-                      'click_count':{user_web.clicks}}
+                      'click_count':user_web.clicks}
         click_counts.append(web_clicks)
         tags_format = {'tag_id': user_web.tag_id,
                        'tag_name': f'{global_tags[user_web.tag_id - 1].name}'}
@@ -32,8 +32,17 @@ def home():
 
     if request.method == 'POST':
         website_id = request.form.get('website_id')
-        #individual_clicks = filter(lambda website: website['web_id'] )
-        print(click_counts)
+        live_click_dictionary = None
+        for click_dictionary in click_counts:
+            # print(type(click_dictionary['web_id']))
+            # print(type(website_id))
+            if click_dictionary['web_id'] == int(website_id):
+                live_click_dictionary = click_dictionary
+
+        website = RSS_Data.query.filter_by(id=website_id, user_id=current_user.id).first()
+        website.clicks = int(live_click_dictionary['click_count']) + 1
+        print(website.clicks)
+        db.session.commit()
         if "feed_id" in request.form:
 
 
