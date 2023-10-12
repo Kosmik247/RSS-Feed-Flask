@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 import feedparser
 from . import db
 from .db_models import RSS_Data, Readlist, Tags
-from .rec_alg import test_alg
+from .rec_alg import test_alg, recommendation_algorithm
 views = Blueprint('views', __name__)
 
 
@@ -11,7 +11,8 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    test_alg()
+
+    recommendation_algorithm()
     website_link = 'None'
     website = None
     user_tags = []
@@ -171,6 +172,7 @@ def read_later():
 @views.route('/discover', methods=['GET', 'POST'])
 @login_required
 def discover():
+
     if request.method == 'POST':
         if "article_title" in request.form:
             title = request.form.get('article_title')
@@ -193,8 +195,16 @@ def discover():
             db.session.add(article_to_add)
             db.session.commit()
 
+    global_tags_count = Tags.query.count()
+
+
+
+    user_websites_sorted = []
+    for i in range(global_tags_count):
+        user_websites_sorted.append({'tag_id': i+1, 'content':[]})
+
     websites = RSS_Data.query.all()
-    grouped_websites = []
+
     for website in websites:
         if website.user_id is None:
             website_existing = False
@@ -205,7 +215,7 @@ def discover():
 
             if website_existing != True:
                 website_link = website.link
-                related_articles = [f"{website.title}", f"{website_link}", f"{website.tag_id}"]
+                related_website = [f"{website.title}", f"{website_link}", f"{website.tag_id}"]
                 feed = feedparser.parse(website_link)
                 individual_articles = feed['entries'][0:4]
                 # Stores individual articles as a dictionary in a list, this list is associated with its source link title
@@ -218,12 +228,14 @@ def discover():
                         individual_articles_temp = {'title': f'{article.title}',
                                                     'desc': f'No Description could be found for this article.',
                                                     'link': f'{article.link}'}
-                    related_articles.append(individual_articles_temp)
+                    related_website.append(individual_articles_temp)
 
                 # Global grouped sources list that gets passed through to front end
-                grouped_websites.append(related_articles)
-
+                for tags in user_websites_sorted:
+                    if tags['tag_id'] == website.tag_id:
+                        tags['content'].append(related_website)
             else:
                 print("Website already saved and will not show in discover page")
 
-    return render_template("discover.html", user=current_user, discovery=grouped_websites)
+    user_recommended_tags = recommendation_algorithm(user_websites_sorted)
+    return render_template("discover.html", user=current_user, discovery=user_websites_sorted)
