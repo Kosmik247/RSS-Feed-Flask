@@ -105,7 +105,18 @@ def delete_website():
 @views.route('/add_links', methods=['GET', 'POST'])
 @login_required
 def add_links():
+    user_tags = []
+
     tags_list = Tags.query.all()
+    user_saved_websites = RSS_Data.query.filter_by(user_id=current_user.id).all()
+
+    for user_web in user_saved_websites:
+
+        tags_format = {'tag_id': user_web.tag_id,
+                       'tag_name': f'{tags_list[user_web.tag_id - 1].name}'}
+        if tags_format not in user_tags:
+            user_tags.append(tags_format)
+
 
     if request.method == 'POST':
         if "add_link" in request.form:
@@ -121,27 +132,32 @@ def add_links():
                 db.session.add(new_link)
                 db.session.commit()
 
-    return render_template("website_add.html", user=current_user, tags=tags_list)
+    return render_template("website_add.html", user=current_user,tags=tags_list, user_tags=user_tags)
 
 
 @views.route('/read_later', methods=['GET', 'POST'])
 @login_required
 def read_later():
+    """Function behind the readlater/saved article page."""
+    # --- Tag Definition --- #
+    # Gets all user tags related to the articles that the user has saved so that only those tags are presented to the user.
     user_tags = []
     global_tags = Tags.query.all()
-    user_saved_websites = RSS_Data.query.filter_by(user_id=current_user.id).all()
-    for user_web in user_saved_websites:
-        tags_format = {'tag_id': user_web.tag_id,
-                       'tag_name': f'{global_tags[user_web.tag_id - 1].name}'}
+    user_saved_articles = Readlist.query.filter_by(user_id=current_user.id).all()
+    for user_art in user_saved_articles:
+        tags_format = {'tag_id': user_art.tag,
+                       'tag_name': f'{global_tags[user_art.tag - 1].name}'}
         if tags_format not in user_tags:
             user_tags.append(tags_format)
-
+    # --- POST METHOD --- #
     if request.method == 'POST':
+        # --- Removes article that is saved from readlist --- #
         if "unlike_article" in request.form:
             article_id = request.form.get('unlike_article')
             article_to_del = Readlist.query.get(article_id)
             db.session.delete(article_to_del)
             db.session.commit()
+        # --- Refreshes the webpage with the relevant filters --- #
         if "filter_article" in request.form:
             tag_filter = request.form.get('filter_article')
             print(tag_filter)
