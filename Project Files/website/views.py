@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 import feedparser
 from . import db
 from .db_models import RSS_Data, Readlist, Tags
-# from .rec_alg import test_alg
+from .rec_alg import test_alg
 views = Blueprint('views', __name__)
 
 
@@ -11,7 +11,7 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    # test_alg()
+    test_alg()
     website_link = 'None'
     website = None
     user_tags = []
@@ -34,14 +34,12 @@ def home():
         website_id = request.form.get('website_id')
         live_click_dictionary = None
         for click_dictionary in click_counts:
-            # print(type(click_dictionary['web_id']))
-            # print(type(website_id))
             if click_dictionary['web_id'] == int(website_id):
                 live_click_dictionary = click_dictionary
 
         website = RSS_Data.query.filter_by(id=website_id, user_id=current_user.id).first()
         website.clicks = int(live_click_dictionary['click_count']) + 1
-        print(website.clicks)
+
         db.session.commit()
         if "feed_id" in request.form:
 
@@ -119,7 +117,7 @@ def add_links():
             if website_existence and current_user.id == website_existence.user_id:
                 flash('This title already exists', category='error')
             else:
-                new_link = RSS_Data(title=website_title, link=website_link, tag_id=website_tag, user_id=current_user.id)
+                new_link = RSS_Data(title=website_title, link=website_link, clicks=0, tag_id=website_tag, user_id=current_user.id)
                 db.session.add(new_link)
                 db.session.commit()
 
@@ -175,7 +173,7 @@ def discover():
             title = request.form.get('add_discovery_feed')
             link = request.form.get('source_link')
             article_to_add = RSS_Data(title=request.form.get('add_discovery_feed'),
-                                      link=request.form.get('source_link'),tag_id=request.form.get('source_tag'), user_id=current_user.id)
+                                      link=request.form.get('source_link'), clicks=0, tag_id=request.form.get('source_tag'), user_id=current_user.id)
             db.session.add(article_to_add)
             db.session.commit()
 
