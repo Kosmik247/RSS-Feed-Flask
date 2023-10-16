@@ -246,3 +246,8 @@ def discover():
         if len(individual_tag_groups) != 1:
             user_websites_sorted.append(individual_tag_groups)
     return render_template("discover.html", user=current_user, discovery=user_websites_sorted)
+
+@views.route('/user_stats', methods=['GET', 'POST'])
+@login_required
+def user_stats():
+    return render_template("user_stats.html", user=current_user)
