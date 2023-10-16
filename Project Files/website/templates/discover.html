@@ -5,9 +5,34 @@
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-left pt-3 pb-2 mb-3 border-bottom">
             <h1 class="h1">Discovery Feed</h1>
         </div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand">Filter by:</a>
 
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarText">
+          <form action="/discover" method="POST">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                        <button name="filter_websites" class="btn btn-outline-dark btn-lg" type="submit" value="{{ None }}">All</button>
+                    </li>
+                {% for tag in discovery %}
+                    <li class="nav-item">
+                        <button name="filter_websites" class="btn btn-outline-dark btn-lg" type="submit" value={{ tag[0][0] }}>
+                            {{ tag[0][1] }}
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+     </form>
+      </div>
+    </nav>
         <div class="row">
-            {% for website in discovery %}
+            {% for tag_group in discovery %}
+                <h2>{{ tag_group[0][1] }}</h2>
+                {% for website in tag_group[1:] %}
+
                 <div class="d-flex justify-content-between">
                     <h4 class="h4">Website: {{ website[0] }}</h4>
 
@@ -26,33 +51,34 @@
 
 
 
-                {% for article in website[3:] %}
+                        {% for article in website[3:] %}
 
-                    <div class="col-sm-5">
-                        <div class="card">
-                            <div class="card-body">
-
-
-                                <h5 class="card-title">{{ article['title'] }}</h5>
-
-                                <p class="card-text">{{ article['desc'] }}</p>
+                            <div class="col-sm-5">
+                                <div class="card">
+                                    <div class="card-body">
 
 
-                                <a href="{{ article['link'] }}" class="btn btn-primary">Go to article</a>
-                                <form action="/discover" method="POST">
-                                    <button name="article_title" class="btn btn-secondary" type="submit"
-                                            value="{{ article['title'] }}">
-                                        <input type="hidden" name="article_link" value="{{ article['link'] }}"/>
-                                        <input type="hidden" name="article_desc"
-                                               value="{{ article['desc'] }}"/>
-                                        <input type="hidden" name="source_link" value="{{ website }}"/>
-                                        Add to reading list
-                                    </button>
-                                </form>
+                                        <h5 class="card-title">{{ article['title'] }}</h5>
+
+                                        <p class="card-text">{{ article['desc'] }}</p>
+
+
+                                        <a href="{{ article['link'] }}" class="btn btn-primary">Go to article</a>
+                                        <form action="/discover" method="POST">
+                                            <button name="article_title" class="btn btn-secondary" type="submit"
+                                                    value="{{ article['title'] }}">
+                                                <input type="hidden" name="article_link" value="{{ article['link'] }}"/>
+                                                <input type="hidden" name="article_desc"
+                                                       value="{{ article['desc'] }}"/>
+                                                <input type="hidden" name="source_link" value="{{ website }}"/>
+                                                Add to reading list
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                {% endfor %}
+                        {% endfor %}
+                    {% endfor %}
             {% endfor %}
         </div>
     </main>

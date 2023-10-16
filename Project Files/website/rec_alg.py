@@ -18,7 +18,7 @@ def test_alg():
     print(tag_clicks)
     ...
 
-def recommendation_algorithm(grouped_sorted_websites):
+def recommendation_algorithm():
     """A popularity based recommendation system"""
     tag_clicks = {}
     recommended_tags = []
@@ -35,15 +35,16 @@ def recommendation_algorithm(grouped_sorted_websites):
 
     # Sorts the dictionary that tracks count into numerical descending order and returns it
     sorted_tag_clicks = dict(sorted(tag_clicks.items(), key=lambda tag: tag[1], reverse=True))
+    print(sorted_tag_clicks)
+    for sorted_tag in sorted_tag_clicks:
+        for tag in tags:
 
-    for tag in tags:
-        for sorted_tag in sorted_tag_clicks:
             if tag.id == sorted_tag:
-                print("True")
-                recommended_tags.append(tag.name,sorted_tag['tag.id'])
 
-    print(recommended_tags)
-    return sorted_tag_clicks
+                recommended_tags.append(sorted_tag)
+
+
+    return recommended_tags
 
 
 

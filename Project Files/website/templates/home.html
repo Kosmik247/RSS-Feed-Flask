@@ -35,10 +35,11 @@
                       {% for feed in user.feeds %}
 
                           {% if feed.tag_id == tag['tag_id']%}
-                             <h6>{{ feed.id }}</h6>
+
                               <li class="list-group-item">
-                              <button type="submit" class="btn btn-link border" name="feed_id" value="{{ feed.title }}">{{ feed.title }}</button>
-                                <input type="hidden" name="website_id" value="{{ feed.id }}"/>
+                              <button type="submit" class="btn btn-link border" name="website_id" value="{{ feed.id }}">{{ feed.title }}</button>
+                                <input type="hidden" name="feed_id" value="{{ feed.title }}"/>
+                              <h6>{{ feed.id }}</h6>
                             </li>
                           <!-- Modifying the attribute btn btn-link will change what type of button appears for each individual website.-->
                           {% endif %}
