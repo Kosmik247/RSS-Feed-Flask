@@ -17,11 +17,10 @@ def test_alg():
 
     print(tag_clicks)
     ...
-
-def recommendation_algorithm():
-    """A popularity based recommendation system"""
+def tag_counter():
+    """A function that tracks the number of clicks per tag,by building it up from all websites saved by the user"""
     tag_clicks = {}
-    recommended_tags = []
+
     tags = Tags.query.all()
     for tag in tags:
         tag_clicks[tag.id] = 0
@@ -35,6 +34,31 @@ def recommendation_algorithm():
 
     # Sorts the dictionary that tracks count into numerical descending order and returns it
     sorted_tag_clicks = dict(sorted(tag_clicks.items(), key=lambda tag: tag[1], reverse=True))
+    return sorted_tag_clicks
+
+def global_tag_counter():
+    """A function that tracks the number of clicks per tag,by building it up from all websites saved by the user"""
+    tag_clicks = {}
+
+    tags = Tags.query.all()
+    for tag in tags:
+        tag_clicks[tag.id] = 0
+
+    # Query the database to retrieve all websites and all tags
+    websites = RSS_Data.query.all()
+    global_websites = [website for website in websites]
+
+    for website in global_websites:
+        tag_clicks[website.tag_id] += website.clicks
+
+    # Sorts the dictionary that tracks count into numerical descending order and returns it
+    sorted_tag_clicks = dict(sorted(tag_clicks.items(), key=lambda tag: tag[1], reverse=True))
+    return sorted_tag_clicks
+def recommendation_algorithm():
+    """A popularity based recommendation system"""
+    recommended_tags = []
+    tags = Tags.query.all()
+    sorted_tag_clicks = tag_counter()
     print(sorted_tag_clicks)
     for sorted_tag in sorted_tag_clicks:
         for tag in tags:

@@ -36,6 +36,7 @@ class Readlist(db.Model):
 class Tags(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(10000))
+    # clicks = db.Column(db.Integer)
     website = db.relationship('RSS_Data', back_populates='tag')
 
 

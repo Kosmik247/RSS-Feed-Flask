@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template, request, flash, jsonify
+from flask import Blueprint, render_template, request, flash
 from flask_login import login_required, current_user
 import feedparser
 from . import db
 from .db_models import RSS_Data, Readlist, Tags
-from .rec_alg import test_alg, recommendation_algorithm
+from .rec_alg import recommendation_algorithm, tag_counter, global_tag_counter
 views = Blueprint('views', __name__)
 
 
@@ -250,4 +250,16 @@ def discover():
 @views.route('/user_stats', methods=['GET', 'POST'])
 @login_required
 def user_stats():
-    return render_template("user_stats.html", user=current_user)
+    """The function behind the user statistics page, it returns all required data."""
+    global_tags = Tags.query.all()
+    global_tags_named = [tag.name for tag in global_tags]
+    global_tags_id = [tag.id for tag in global_tags]
+    stats_data = tag_counter()
+    global_tag_clicks = global_tag_counter()
+    print(global_tag_clicks)
+    user_websites = RSS_Data.query.filter_by(user_id=current_user.id).order_by(RSS_Data.clicks.desc()).limit(4)
+
+
+
+
+    return render_template("user_stats.html", user=current_user, stats_data=stats_data,global_tags=global_tags, named_tags=global_tags_named, id_tags=global_tags_id, websites=user_websites, global_clicks=global_tag_clicks)

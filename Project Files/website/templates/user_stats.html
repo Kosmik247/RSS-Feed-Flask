@@ -1,4 +1,125 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}User Stats{% endblock %}
 {% block content %}
+    <head>
+        <!-- Using google charts to draw data charts for my personal use -->
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript">
+            google.charts.load("current", {packages: ["corechart","bar"]});
+            google.charts.setOnLoadCallback(draw_charts);
+
+            function draw_charts() {
+            draw_pie_chart();
+            draw_bar_chart();
+            }
+            let tags = {{ named_tags | tojson | safe }}; // Get the list of tag names
+            let stats_data = {{ stats_data | tojson | safe }}; // Get the tag statistics data
+            let global_tags_id = {{ id_tags | tojson | safe }}; // Get the list of tag IDs
+            let global_clicks = {{ global_clicks | tojson | safe }};
+
+
+            function draw_pie_chart() {
+                let data = new google.visualization.DataTable();
+                data.addColumn('string', 'Tag');
+                data.addColumn('number', 'Number of clicks');
+
+
+                // Generating loop based on the length of the tags list so that user additions also modify tag list
+                for (let i = 0; i < tags.length; i++) {
+                    let tagId = global_tags_id[i];
+                    let tagName = tags[i];
+                    let clicks = stats_data[tagId] || 0; // Set clicks to 0 if not found in stats_data
+
+                    data.addRows([[tagName, clicks]]);
+                }
+
+
+                let options = {
+                    title: 'Tag breakdown',
+                    is3D: false,
+                };
+
+
+                let chart = new google.visualization.PieChart(document.getElementById('piechart'));
+                chart.draw(data, options);
+            }
+            function draw_bar_chart() {
+                let data = new google.visualization.DataTable();
+                data.addColumn('string', 'Tag');
+                data.addColumn('number', 'Global');
+                data.addColumn('number', 'User');
+
+                let chartData = [];
+                for (let i = 0; i < tags.length; i++) {
+                    let tag = tags[i];
+                    let global = global_clicks[i+1];
+                    let user = stats_data[i+1];
+
+
+                    chartData.push([tag, global, user]);
+                }
+                data.addRows(chartData);
+
+                var options = {
+                  chart: {
+                    title: 'Global Tag Comparison',
+                    subtitle: 'Global VS User Tag Interactions',
+                  }
+                };
+
+                var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+
+                chart.draw(data, google.charts.Bar.convertOptions(options));
+              }
+        </script>
+    </head>
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap pt-3 pb-2 mb-3 border-bottom">
+        <h1>Personal Statistics</h1>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="column-content">
+                    <!-- Content for the website column -->
+                    <h3>Favorite Websites</h3>
+                    <p>Here are the websites you've interacted with the most.</p>
+                <div>
+                    {% for website in websites %}
+                        <div class="border border-dark">
+                            <h5>Title: {{ website.title }}</h5>
+                            <h5 class="text-muted">Interactions: {{ website.clicks }}</h5>
+                            {% for tag in global_tags %}
+                                {% if tag.id == website.tag_id %}
+                                <h5 class="text-muted">Tag: {{ tag.name }}</h5>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <br>
+
+                    {% endfor %}
+                </div>
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="column-content">
+                    <!-- Content for the tags column -->
+                    <h3>Favourite Tags</h3>
+                    <div id="piechart" style="width: 700px; height: 500px;"></div>
+                    <p>This piechart shows you the breakdown of the tags that you've interacted with, visually based on
+                        percentage</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="column-content">
+                    <!-- Content for the third column -->
+                    <h3>Column 3</h3>
+
+                    <div id="columnchart_material" class="chart" style="width: 700px; height: 500px;></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
 {% endblock %}
