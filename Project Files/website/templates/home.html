@@ -32,7 +32,7 @@
                 <div id="collapse{{ tag['tag_id'] }}" class="panel-collapse collapse">
                   <form method="POST" action="/">
                     <ul class="list-group list-group-flush">
-                      {% for feed in user.feeds %}
+                      {% for feed in user.rss_data %}
 
                           {% if feed.tag_id == tag['tag_id']%}
 

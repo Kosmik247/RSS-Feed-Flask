@@ -50,11 +50,7 @@ def home():
             website = RSS_Data.query.filter_by(title=website_title, user_id=current_user.id).first()
 
             if website:
-                # print(website)
-                # print(website.tag.name)
                 website_link = website.link
-                # print(website_link)
-
             else:
                 print("No websites stored in database.")
                 website_link = "None"
@@ -146,7 +142,7 @@ def read_later():
     user_tags = []
     global_tags = Tags.query.all()
     user_saved_articles = Readlist.query.filter_by(user_id=current_user.id).all()
-    print(global_tags[1].name)
+
     for user_art in user_saved_articles:
         print(type(user_art.tag))
         tags_format = {'tag_id': user_art.tag,
@@ -218,7 +214,7 @@ def discover():
             # Checks if user has already added the website to their personal feed. IF they have, it does not appear.
             if website.user_id is None:
                 website_existing = False
-                for saved_website in current_user.feeds:
+                for saved_website in current_user.rss_data:
                     if saved_website.title == website.title:
                         website_existing = True
 

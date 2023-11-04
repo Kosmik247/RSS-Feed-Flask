@@ -9,7 +9,7 @@
     {% for tag in user_tags %}
     <h4>{{ tag.tag_name }}</h4>
 <ul class="list-group list-group-flush" id="website_add">
-    {% for website in user.feeds %}
+    {% for website in user.rss_data %}
         {% if website.tag.id == tag.tag_id %}
             <li class="list-group-item">
                 <h6>Title: {{ website.title }}</h6>
