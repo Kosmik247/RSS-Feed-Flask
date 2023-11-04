@@ -3,9 +3,19 @@ from flask_login import UserMixin
 from sqlalchemy.sql import func
 
 # All database tables inherit from the basic class db.Model
-# Usermixin is inherited by the user to allow the user class to use authentication parameters
+
+
+class User_Website_Link(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    rss_data_id = db.Column(db.Integer, db.ForeignKey('rss__data.id'))
+
+    # Define relationships to User and Website
+    user = db.relationship('User', back_populates='rss_data')
+    rss_data = db.relationship('RSS_Data', back_populates='users')
 
 # Defining User Table
+# Usermixin is inherited by the user to allow the user class to use authentication parameters
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True)
@@ -25,23 +35,16 @@ class RSS_Data(db.Model):
     tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'))
     # Define relationships
     tag = db.relationship('Tags', back_populates='rss_data')
-    users = db.relationship('User', secondary='user_website_link', back_populates='rss_data')
+    users = db.relationship('User_Website_Link',back_populates='rss_data')
 
-class User_Website_Link(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    rss_data_id = db.Column(db.Integer, db.ForeignKey('rss__data.id'))
 
-    # Define relationships to User and Website
-    user = db.relationship('User', back_populates='rss_data')
-    rss_data = db.relationship('RSS_Data', back_populates='users')
 class Readlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     art_title = db.Column(db.String(10000))
     art_desc = db.Column(db.String(10000))
     art_link = db.Column(db.String(10000))
     tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'))
-
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     # Define relationships
 
     tag = db.relationship('Tags', back_populates='readlist')
