@@ -19,62 +19,64 @@ def home():
     click_counts = []
 
     global_tags = Tags.query.all()
-    user_saved_websites = RSS_Data.query.filter_by(user_id=current_user.id).all()
 
-    for user_web in user_saved_websites:
-        web_clicks = {'web_id': user_web.id,
-                      'click_count':user_web.clicks}
-        click_counts.append(web_clicks)
-        tags_format = {'tag_id': user_web.tag_id,
-                       'tag_name': f'{global_tags[user_web.tag_id - 1].name}'}
-        if tags_format not in user_tags:
-            user_tags.append(tags_format)
+    user_saved_websites = current_user.rss_data
+    print(user_saved_websites)
 
+    # for user_web in user_saved_websites:
+    #     web_clicks = {'web_id': user_web.id,
+    #                   'click_count':user_web.clicks}
+    #     click_counts.append(web_clicks)
+    #     tags_format = {'tag_id': user_web.tag_id,
+    #                    'tag_name': f'{global_tags[user_web.tag_id - 1].name}'}
+    #     if tags_format not in user_tags:
+    #         user_tags.append(tags_format)
+    #
 
-    if request.method == 'POST':
-        website_id = request.form.get('website_id')
-        print(website_id)
-        live_click_dictionary = None
-        for click_dictionary in click_counts:
-            if click_dictionary['web_id'] == int(website_id):
-                live_click_dictionary = click_dictionary
-
-        website = RSS_Data.query.filter_by(id=website_id, user_id=current_user.id).first()
-        website.clicks = int(live_click_dictionary['click_count']) + 1
-
-        db.session.commit()
-        if "feed_id" in request.form:
-
-
-            website_title = request.form.get('feed_id')
-            website = RSS_Data.query.filter_by(title=website_title, user_id=current_user.id).first()
-
-            if website:
-                website_link = website.link
-            else:
-                print("No websites stored in database.")
-                website_link = "None"
-
-        if "art_tag_id" in request.form:
-            tag_id = request.form.get('art_tag_id')
-            title = request.form.get('article_title')
-            description = request.form.get('article_desc')
-            article_link = request.form.get('article_link')
-            print(tag_id)
-
-
-            existing_article = Readlist.query.filter_by(art_title=title).first()
-            if existing_article and existing_article.user_id == current_user.id:
-                flash('Article already saved', category='error')
-            else:
-
-
-
-
-                saved_article = Readlist(art_title=title, art_desc=description, art_link=article_link,tag=tag_id, user_id=current_user.id)
-                print(saved_article)
-                db.session.add(saved_article)
-                db.session.commit()
+    # if request.method == 'POST':
+    #     website_id = request.form.get('website_id')
+    #     print(website_id)
+    #     live_click_dictionary = None
+    #     for click_dictionary in click_counts:
+    #         if click_dictionary['web_id'] == int(website_id):
+    #             live_click_dictionary = click_dictionary
+    #
+    #     website = RSS_Data.query.filter_by(id=website_id, user_id=current_user.id).first()
+    #     website.clicks = int(live_click_dictionary['click_count']) + 1
+    #
+    #     db.session.commit()
+    #     if "feed_id" in request.form:
+    #
+    #
+    #         website_title = request.form.get('feed_id')
+    #         website = RSS_Data.query.filter_by(title=website_title, user_id=current_user.id).first()
+    #
+    #         if website:
+    #             website_link = website.link
+    #         else:
+    #             print("No websites stored in database.")
+    #             website_link = "None"
+    #
+    #     if "art_tag_id" in request.form:
+    #         tag_id = request.form.get('art_tag_id')
+    #         title = request.form.get('article_title')
+    #         description = request.form.get('article_desc')
+    #         article_link = request.form.get('article_link')
+    #         print(tag_id)
+    #
+    #
+    #         existing_article = Readlist.query.filter_by(art_title=title).first()
+    #         if existing_article and existing_article.user_id == current_user.id:
+    #             flash('Article already saved', category='error')
+    #         else:
+    #
+    #
+    #
+    #
+    #             saved_article = Readlist(art_title=title, art_desc=description, art_link=article_link,tag=tag_id, user_id=current_user.id)
+    #             print(saved_article)
+    #             db.session.add(saved_article)
+    #             db.session.commit()
 
     feed = feedparser.parse(website_link)
 

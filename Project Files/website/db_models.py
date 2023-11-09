@@ -4,15 +4,26 @@ from sqlalchemy.sql import func
 
 # All database tables inherit from the basic class db.Model
 
-
+# Link tables
 class User_Website_Link(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     rss_data_id = db.Column(db.Integer, db.ForeignKey('rss__data.id'))
-
+    date_added = db.Column(db.DateTime(timezone=True), default=func.now())
+    clicks = db.Column(db.Integer)
     # Define relationships to User and Website
     user = db.relationship('User', back_populates='rss_data')
     rss_data = db.relationship('RSS_Data', back_populates='users')
+
+# Link tables
+class User_Readlist_Link(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    readlist_id = db.Column(db.Integer, db.ForeignKey('readlist.id'))
+    date_added = db.Column(db.DateTime(timezone=True), default=func.now())
+    # Define relationships to User and Website
+    user = db.relationship('User', back_populates='readlist')
+    readlist = db.relationship('Readlist', back_populates='users')
 
 # Defining User Table
 # Usermixin is inherited by the user to allow the user class to use authentication parameters
@@ -24,18 +35,17 @@ class User(db.Model, UserMixin):
     date_signed_up = db.Column(db.DateTime(timezone=True), default=func.now())
     # Define relationships
     rss_data = db.relationship('User_Website_Link', back_populates='user')
-    readlist = db.relationship('Readlist', back_populates='user')
+    readlist = db.relationship('User_Readlist_Link', back_populates='user')
 
 # Defining Data Table
 class RSS_Data(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(10000))
     link = db.Column(db.String(10000))
-    clicks = db.Column(db.Integer)
     tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'))
     # Define relationships
     tag = db.relationship('Tags', back_populates='rss_data')
-    users = db.relationship('User_Website_Link',back_populates='rss_data')
+    users = db.relationship('User_Website_Link', back_populates='rss_data')
 
 
 class Readlist(db.Model):
@@ -44,11 +54,10 @@ class Readlist(db.Model):
     art_desc = db.Column(db.String(10000))
     art_link = db.Column(db.String(10000))
     tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     # Define relationships
 
     tag = db.relationship('Tags', back_populates='readlist')
-    user = db.relationship('User', back_populates='readlist')
+    users = db.relationship('User_Readlist_Link', back_populates='readlist')
 
 class Tags(db.Model):
     id = db.Column(db.Integer, primary_key=True)
