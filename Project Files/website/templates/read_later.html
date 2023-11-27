@@ -33,24 +33,24 @@
     </nav>
     </h3>
     <div class="row">
-    {% for tag in tags%}
+    {% for tag in tags %}
         <h3>{{ tag.tag_name }}</h3>
 
-                    {% for article in user.liked %}
-                        {% if article.tag == tag['tag_id'] %}
+                    {% for article in user.readlist %}
+                        {% if article.readlist.tag_id == tag['tag_id'] %}
                             <div class="col-sm-5">
                             <div class="card">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ article.art_title }}</h5>
-                                    {% if article.art_desc == None %}
+                                    <h5 class="card-title">{{ article.readlist.art_title }}</h5>
+                                    {% if article.readlist.art_desc == None %}
                                         <p class="card-text">No description for the article could be found.</p>
                                     {% else %}
-                                        <p class="card-text">{{ article.art_desc }}</p>
+                                        <p class="card-text">{{ article.readlist.art_desc }}</p>
                                     {% endif %}
 
-                                    <a href="{{ article.art_link }}" class="btn btn-primary">Go to article</a>
+                                    <a href="{{ article.readlist.art_link }}" class="btn btn-primary">Go to article</a>
                                     <form action="/read_later" method="POST">
-                                        <button name="unlike_article" class="btn btn-danger" type="submit" value="{{ article.id }}">
+                                        <button name="unlike_article" class="btn btn-danger" type="submit" value="{{ article.readlist.id }}">
                                             Remove from reading list
                                         </button>
                                     </form>
