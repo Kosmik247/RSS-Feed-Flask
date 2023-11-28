@@ -68,6 +68,7 @@
                                             <button name="article_title" class="btn btn-secondary" type="submit"
                                                     value="{{ article['title'] }}">
                                                 <input type="hidden" name="article_link" value="{{ article['link'] }}"/>
+                                                <input type="hidden" name="article_id" value="{{ tag_group[0][0] }}"/>
                                                 <input type="hidden" name="article_desc"
                                                        value="{{ article['desc'] }}"/>
                                                 <input type="hidden" name="source_link" value="{{ website }}"/>

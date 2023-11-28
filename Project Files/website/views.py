@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 import feedparser
 from . import db
 from .db_models import RSS_Data, Readlist, Tags, User_Website_Link, User_Readlist_Link
-from .rec_alg import recommendation_algorithm, tag_counter, global_tag_counter
+from .external_functions import top_interaction_recommendation_algorithm, tag_counter, global_tag_counter
 views = Blueprint('views', __name__)
 
 
@@ -92,7 +92,7 @@ def delete_website():
     if request.method == 'POST':
         if "delete_link" in request.form:
             website_id = request.form.get('id')
-            link_table_website = User_Website_Link.query.filter_by(rss_data_id=website_id).first()
+            link_table_website = User_Website_Link.query.filter_by(rss_data_id=website_id, user_id=current_user.id).first()
             print(link_table_website)
             if link_table_website:
                 if link_table_website.user_id == current_user.id:
@@ -102,11 +102,11 @@ def delete_website():
 
                     db.session.delete(link_table_website)
 
-
+                    db.session.commit()
                     flash('Website deleted successfully', category='success')
             else:
                 flash('Website not found', category='error')
-        db.session.commit()
+
     return render_template("home.html", user=current_user)
 
 
@@ -205,7 +205,7 @@ def read_later():
 @login_required
 def discover():
     # Runs discovery algorithm to prioritise tags
-    user_recommended_tags = recommendation_algorithm()
+    user_recommended_tags = top_interaction_recommendation_algorithm()
     user_websites_sorted = []
 
     # --- Separation for all the POST method code --- #
@@ -213,25 +213,44 @@ def discover():
         if "article_title" in request.form:
             title = request.form.get('article_title')
             existing_article = Readlist.query.filter_by(art_title=title).first()
-            if existing_article and existing_article.user_id == current_user.id:
+            print(existing_article)
+            try:
+                readlist_link = User_Readlist_Link.query.filter_by(readlist_id=existing_article.id, user_id=current_user.id).first()
+            except AttributeError:
+                readlist_link = None
+            print(readlist_link)
+            if existing_article and readlist_link:
+                # If statement that evaluates if article and readlist exists
+                print("True")
                 flash('Article already saved', category='error')
+            elif existing_article and readlist_link == None:
+                print(True)
+                # Function that finds an existing article and adds it to the users articles.
+                new_readlist_link = User_Readlist_Link(user_id=current_user.id, readlist_id=existing_article.id)
+                db.session.add(new_readlist_link)
+                flash('Article saved', category='success')
             else:
 
                 link = request.form.get('article_link')
                 description = request.form.get('article_desc')
-                saved_article = Readlist(art_title=title, art_desc=description, art_link=link, user_id=current_user.id)
+                article_id = request.form.get('article_id')
+                saved_article = Readlist(art_title=title, art_desc=description, art_link=link, tag_id=article_id)
                 db.session.add(saved_article)
                 db.session.commit()
+                new_readlist_link = User_Readlist_Link(user_id=current_user.id, readlist_id=saved_article.id)
+                db.session.add(new_readlist_link)
+                flash('Article saved', category='success')
+            db.session.commit()
 
         if "add_discovery_feed" in request.form:
-            article_to_add = RSS_Data(title=request.form.get('add_discovery_feed'),
-                                      link=request.form.get('source_link'), clicks=0, tag_id=request.form.get('source_tag'), user_id=current_user.id)
-            db.session.add(article_to_add)
+            website_to_add = RSS_Data.query.filter_by(title=request.form.get('add_discovery_feed')).first()
+            website_link_to_add = User_Website_Link(user_id=current_user.id, rss_data_id=website_to_add.id, clicks=0)
+            db.session.add(website_link_to_add)
             db.session.commit()
         if "filter_websites" in request.form:
             user_desired_tag = request.form.get("filter_websites")
             if user_desired_tag == "None":
-                user_recommended_tags = recommendation_algorithm()
+                user_recommended_tags = top_interaction_recommendation_algorithm()
             else:
 
                 user_recommended_tags = [user_desired_tag]
@@ -244,14 +263,13 @@ def discover():
         individual_tag_groups = [[relevant_tag.id, relevant_tag.name]]
 
         for website in global_websites:
+            website_existing = False
             # Checks if user has already added the website to their personal feed. IF they have, it does not appear.
-            if website.user_id is None:
-                website_existing = False
-                for saved_website in current_user.rss_data:
-                    if saved_website.title == website.title:
-                        website_existing = True
+            for website_links in website.users:
+                if website_links.user_id == current_user.id:
+                    website_existing = True
 
-            if website_existing != True:
+            if not website_existing:
 
                 if website.tag_id == int(user_tag):
 
@@ -285,9 +303,7 @@ def user_stats():
     global_tags_id = [tag.id for tag in global_tags]
     stats_data = tag_counter()
     global_tag_clicks = global_tag_counter()
-    print(global_tag_clicks)
-    user_websites = RSS_Data.query.filter_by(user_id=current_user.id).order_by(RSS_Data.clicks.desc()).limit(4)
-
+    user_websites = User_Website_Link.query.filter_by(user_id=current_user.id).order_by(User_Website_Link.clicks.desc()).limit(4)
 
 
 
