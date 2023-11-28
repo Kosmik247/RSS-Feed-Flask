@@ -25,12 +25,10 @@ def tag_counter():
     for tag in tags:
         tag_clicks[tag.id] = 0
 
-    # Query the database to retrieve all websites and all tags
-    websites = RSS_Data.query.all()
-    user_websites = [website for website in websites if website.user_id == current_user.id]
+    user_websites = current_user.rss_data
 
     for website in user_websites:
-        tag_clicks[website.tag_id] += website.clicks
+        tag_clicks[website.rss_data.tag_id] += website.clicks
 
     # Sorts the dictionary that tracks count into numerical descending order and returns it
     sorted_tag_clicks = dict(sorted(tag_clicks.items(), key=lambda tag: tag[1], reverse=True))
@@ -45,16 +43,18 @@ def global_tag_counter():
         tag_clicks[tag.id] = 0
 
     # Query the database to retrieve all websites and all tags
-    websites = RSS_Data.query.all()
-    global_websites = [website for website in websites]
+    global_websites = RSS_Data.query.all()
+    print(global_websites)
 
     for website in global_websites:
-        tag_clicks[website.tag_id] += website.clicks
+        for entry_link in website.users:
+            print(entry_link.clicks)
+            tag_clicks[website.tag_id] += entry_link.clicks
 
     # Sorts the dictionary that tracks count into numerical descending order and returns it
     sorted_tag_clicks = dict(sorted(tag_clicks.items(), key=lambda tag: tag[1], reverse=True))
     return sorted_tag_clicks
-def recommendation_algorithm():
+def top_interaction_recommendation_algorithm():
     """A popularity based recommendation system"""
     recommended_tags = []
     tags = Tags.query.all()

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .db_models import User, RSS_Data
+from .db_models import User, RSS_Data, User_Website_Link, User_Readlist_Link, Readlist
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -36,7 +36,7 @@ def logout():
 @login_required
 def profile():
     if request.method == 'POST':
-        print(current_user.first_name)
+        print(current_user.username)
         password_1_n = request.form.get('password_1')
         password_2_n = request.form.get('password_2')
 
@@ -121,10 +121,23 @@ def delete_account():
 
     """
     user_id = request.form.get('account_id')
-    user_websites = RSS_Data.query.filter_by(user_id=user_id).all()
+    user_websites = User_Website_Link.query.filter_by(user_id=user_id).all()
+    user_articles = User_Readlist_Link.query.filter_by(user_id=user_id).all()
+    for article in user_articles:
+        article_existence = Readlist.query.get(article.readlist_id)
+        print(article_existence.users)
+        if len(article_existence.users) == 1:
+            db.session.delete(article_existence)
+        db.session.delete(article)
+
+
     for website in user_websites:
+        print(website)
+        website_existence = RSS_Data.query.get(website.rss_data_id)
+        print(website_existence.users)
+        if len(website_existence.users) == 1:
+            db.session.delete(website_existence)
         db.session.delete(website)
-    db.session.commit()
 
     del_user = User.query.get(user_id)
     logout()

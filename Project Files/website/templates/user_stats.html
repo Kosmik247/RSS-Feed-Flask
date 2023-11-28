@@ -87,10 +87,10 @@
                 <div>
                     {% for website in websites %}
                         <div class="border border-dark">
-                            <h5>Title: {{ website.title }}</h5>
+                            <h5>Title: {{ website.rss_data.title }}</h5>
                             <h5 class="text-muted">Interactions: {{ website.clicks }}</h5>
                             {% for tag in global_tags %}
-                                {% if tag.id == website.tag_id %}
+                                {% if tag.id == website.rss_data.tag_id %}
                                 <h5 class="text-muted">Tag: {{ tag.name }}</h5>
                                 {% endif %}
                             {% endfor %}
@@ -111,7 +111,7 @@
                         percentage</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="column-content">
                     <!-- Content for the third column -->
                     <h3>Column 3</h3>
