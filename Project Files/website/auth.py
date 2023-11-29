@@ -46,7 +46,7 @@ def profile():
         elif len(password_1_n) < 7:
             flash('Password must be at least 7 characters.', category='error')
         else:
-            current_user.password = generate_password_hash(password_1_n, method='sha256')
+            current_user.password = generate_password_hash(password_1_n, method='scrypt', salt_length=16)
             db.session.commit()
             flash('Password Changed', category='success')
     return render_template("profile.html", user=current_user)
@@ -91,7 +91,7 @@ def sign_up():
             flash('Password must be at least 7 characters.', category='error')
         else:
             new_user = User(email=email, username=username, password=generate_password_hash(
-                password_1, method='sha256'))
+                password_1, method='scrypt', salt_length=16))
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
