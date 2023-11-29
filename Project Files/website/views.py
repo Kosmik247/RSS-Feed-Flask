@@ -184,7 +184,7 @@ def read_later():
             print(article_to_del.users)
             db.session.delete(readlist_linktable_entry)
 
-            if len(article_to_del.users) == 0: # 0 value since the linked user is deleted beforehand, so it will have an empty associated list.
+            if len(article_to_del.users) == 1: # 0 value since the linked user is deleted beforehand, so it will have an empty associated list.
                 db.session.delete(article_to_del)
             db.session.commit()
 
