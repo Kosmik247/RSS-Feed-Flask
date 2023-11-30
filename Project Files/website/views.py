@@ -2,8 +2,8 @@ from flask import Blueprint, render_template, request, flash
 from flask_login import login_required, current_user
 import feedparser
 from . import db
-from .db_models import RSS_Data, Readlist, Tags, User_Website_Link, User_Readlist_Link
-from .external_functions import top_interaction_recommendation_algorithm, tag_counter, global_tag_counter
+from .db_models import RSS_Data, Readlist, Tags, User_Website_Link, User_Readlist_Link, User_Interaction
+from .external_functions import top_interaction_recommendation_algorithm, tag_counter, global_tag_counter, weighted_recommendation_algorithm
 views = Blueprint('views', __name__)
 
 
@@ -11,21 +11,18 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-
+    weighted_recommendation_algorithm()
     # recommendation_algorithm()
     website_link = 'None'
     website = None
     user_tags = []
-    click_counts = []
 
     global_tags = Tags.query.all()
 
     user_saved_websites = current_user.rss_data
 
     for user_web in user_saved_websites:
-        web_clicks = {'web_id': user_web.rss_data.id,
-                      'click_count': user_web.clicks}
-        click_counts.append(web_clicks)
+
         tags_format = {'tag_id': user_web.rss_data.tag_id,
                        'tag_name': f'{global_tags[user_web.rss_data.tag_id].name}'}
         if tags_format not in user_tags:
@@ -35,15 +32,14 @@ def home():
     if request.method == 'POST':
         website_id = request.form.get('website_id')
 
-        live_click_dictionary = None
-        for click_dictionary in click_counts:
-            if click_dictionary['web_id'] == int(website_id):
-                live_click_dictionary = click_dictionary
+
         website = User_Website_Link.query.filter_by(rss_data_id=website_id, user_id=current_user.id).first()
-        website.clicks = int(live_click_dictionary['click_count']) + 1
-        db.session.commit()
+
 
         if "feed_link" in request.form:
+            interaction = User_Interaction(user_id=current_user.id,tag_id=website.rss_data.tag_id,interaction_type="Parse")
+            db.session.add(interaction)
+            db.session.commit()
             website_link = request.form.get('feed_link')
             website = RSS_Data.query.filter_by(link=website_link).first()
 
@@ -54,6 +50,9 @@ def home():
                 website_link = "None"
 
         if "art_tag_id" in request.form:
+            interaction = User_Interaction(user_id=current_user.id, tag_id=website.rss_data.tag_id,interaction_type="Save")
+            db.session.add(interaction)
+            db.session.commit()
             tag_id = request.form.get('art_tag_id')
             title = request.form.get('article_title')
             description = request.form.get('article_desc')
@@ -83,7 +82,7 @@ def home():
     feed = feedparser.parse(website_link)
 
 
-    return render_template("home.html", user=current_user, feeds=feed['entries'], website=website, tags=user_tags, clicks=click_counts)
+    return render_template("home.html", user=current_user, feeds=feed['entries'], website=website, tags=user_tags)
 
 
 @views.route('/delete-website', methods=['POST'])

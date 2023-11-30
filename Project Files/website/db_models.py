@@ -1,7 +1,7 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
-
+from datetime import datetime
 # All database tables inherit from the basic class db.Model
 
 # Link tables
@@ -65,4 +65,12 @@ class Tags(db.Model):
     # Define relationships
     rss_data = db.relationship('RSS_Data', back_populates='tag')
     readlist = db.relationship('Readlist', back_populates='tag')
-
+    user_interactions = db.relationship('User_Interaction', back_populates='tag')
+class User_Interaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'))
+    interaction_type = db.Column(db.String(50))
+    time_of_interaction = db.Column(db.DateTime(timezone=True), default=func.now())
+    # Define relationships
+    tag = db.relationship('Tags', back_populates='user_interactions')

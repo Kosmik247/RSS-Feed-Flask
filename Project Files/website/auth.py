@@ -43,8 +43,8 @@ def profile():
         if password_1_n != password_2_n:
             flash('Passwords don\'t match.', category='error')
 
-        elif len(password_1_n) < 7:
-            flash('Password must be at least 7 characters.', category='error')
+        elif len(password_1_n) < 5:
+            flash('Password must be at least 5 characters.', category='error')
         else:
             current_user.password = generate_password_hash(password_1_n, method='scrypt', salt_length=16)
             db.session.commit()
@@ -87,8 +87,8 @@ def sign_up():
             flash('Username must be greater than 1 character.', category='error')
         elif password_1 != password_2:
             flash('Passwords don\'t match.', category='error')
-        elif len(password_1) < 7:
-            flash('Password must be at least 7 characters.', category='error')
+        elif len(password_1) < 5:
+            flash('Password must be at least 5 characters.', category='error')
         else:
             new_user = User(email=email, username=username, password=generate_password_hash(
                 password_1, method='scrypt', salt_length=16))
