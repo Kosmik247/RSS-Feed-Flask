@@ -13,7 +13,7 @@ def weighted_calculation():
 
     user_interactions = User_Interaction.query.filter_by(user_id=current_user.id)
 
-    tag_weights = {}
+    tag_weights = {tag: 0 for tag in tags}
 
     for interaction in user_interactions:
         # Initial weight definitions
@@ -24,31 +24,30 @@ def weighted_calculation():
 
         # Calculating how recently the user interacted with the website
         time_difference = datetime.now() - interaction.time_of_interaction
-        recent_factor = 1 / (1 + time_difference.total_seconds() / 3600)
+        recent_factor = 1 / (1 + recent_weight * time_difference.total_seconds() / 3600)
 
         tag_weights_calc = weight * recent_factor
 
         if interaction.tag in tag_weights:
             tag_weights[interaction.tag] += tag_weights_calc
-        else:
-            tag_weights[interaction.tag] = tag_weights_calc
 
     return tag_weights
 
 def weighted_recommendation_algorithm():
     """The weighted algorithm for the recommendation system"""
-    print(weighted_calculation())
+    # print(weighted_calculation())
     tag_weights = weighted_calculation()
     recommended_websites = {}
     # Sort tags based on weighted popularity
     sorted_tags = sorted(tag_weights.keys(), key=lambda tag: tag_weights[tag], reverse=True)
     for tag in sorted_tags:
         tag_websites = RSS_Data.query.filter_by(tag_id=tag.id).all()
-        print(tag_websites)
-    for entry in current_user.rss_data:
-        print(entry.rss_data)
-    print(current_user.rss_data)
-    ...
+        for website in tag_websites:
+            if any(user_websites.rss_data == website for user_websites in current_user.rss_data):
+                tag_websites.remove(website)
+        recommended_websites[tag] = tag_websites
+
+    return recommended_websites
 
 
 
