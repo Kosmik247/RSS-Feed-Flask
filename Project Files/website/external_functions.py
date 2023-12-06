@@ -3,6 +3,58 @@ from datetime import datetime
 from .db_models import RSS_Data, Tags, User_Interaction
 import random
 from flask_login import current_user
+def weighted_calculation():
+    """The calculation for the weights of each user interaction"""
+    tags = Tags.query.all()
+    # --- Custom Weightings --- #
+    parse_weight = 1
+    save_weight = 2
+    recent_weight = 0.8
+
+    user_interactions = User_Interaction.query.filter_by(user_id=current_user.id)
+
+    tag_weights = {}
+
+    for interaction in user_interactions:
+        # Initial weight definitions
+        if interaction.interaction_type == "Parse":
+            weight = parse_weight
+        else:
+            weight = save_weight
+
+        # Calculating how recently the user interacted with the website
+        time_difference = datetime.now() - interaction.time_of_interaction
+        recent_factor = 1 / (1 + time_difference.total_seconds() / 3600)
+
+        tag_weights_calc = weight * recent_factor
+
+        if interaction.tag in tag_weights:
+            tag_weights[interaction.tag] += tag_weights_calc
+        else:
+            tag_weights[interaction.tag] = tag_weights_calc
+
+    return tag_weights
+
+def weighted_recommendation_algorithm():
+    """The weighted algorithm for the recommendation system"""
+    print(weighted_calculation())
+    tag_weights = weighted_calculation()
+    recommended_websites = {}
+    # Sort tags based on weighted popularity
+    sorted_tags = sorted(tag_weights.keys(), key=lambda tag: tag_weights[tag], reverse=True)
+    for tag in sorted_tags:
+        tag_websites = RSS_Data.query.filter_by(tag_id=tag.id).all()
+        print(tag_websites)
+    for entry in current_user.rss_data:
+        print(entry.rss_data)
+    print(current_user.rss_data)
+    ...
+
+
+
+
+
+# ----- DEPRECATED -----#
 def test_alg():
     tag_clicks = {}
     tags = Tags.query.all()
@@ -70,42 +122,6 @@ def top_interaction_recommendation_algorithm():
 
 
     return recommended_tags
-
-def weighted_calculation():
-    """The calculation for the weights of each user interaction"""
-def weighted_recommendation_algorithm():
-    """The weighted algorithm for the recommendation system"""
-    tags = Tags.query.all()
-    # --- Custom Weightings --- #
-    parse_weight = 1
-    save_weight = 2
-    recent_weight = 0.8
-    diversity_weight = 0.5 # Diversity weighting to prevent same content from being re recommended. Varies with how wide the users interactions are and will keep a wider range recommended( Low weight rn cuase not many tags)
-
-    user_interactions = User_Interaction.query.filter_by(user_id=current_user.id)
-    unique_tags = []
-    tag_weights = {}
-
-    for interaction in user_interactions:
-        # Initial weight definitions
-        if interaction.interaction_type == "Parse":
-            weight = parse_weight
-        else:
-            weight = save_weight
-
-        # Calculating how recently the user interacted with the website
-        time_difference = datetime.now() - interaction.time_of_interaction
-        recent_factor = 1 / (1 + time_difference.total_seconds() / 3600)
-
-        # Calculating the variety of tags
-        for tag in tags:
-            if tag.id == interaction.tag_id and tag not in unique_tags:
-                unique_tags.append(tags[interaction.tag_id])
-
-        diversity = 1/(1 + unique_tags * diversity_weight)
-    print(unique_tags)
-    pass
-
 
 
 

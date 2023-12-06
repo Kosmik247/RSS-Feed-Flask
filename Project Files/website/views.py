@@ -11,8 +11,8 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    weighted_recommendation_algorithm()
-    # recommendation_algorithm()
+    print(weighted_recommendation_algorithm())
+
     website_link = 'None'
     website = None
     user_tags = []
