@@ -5,82 +5,178 @@
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-left pt-3 pb-2 mb-3 border-bottom">
             <h1 class="h1">Discovery Feed</h1>
         </div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand">Filter by:</a>
 
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarText">
-          <form action="/discover" method="POST">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                        <button name="filter_websites" class="btn btn-outline-dark btn-lg" type="submit" value="{{ None }}">All</button>
-                    </li>
-                {% for tag in discovery %}
-                    <li class="nav-item">
-                        <button name="filter_websites" class="btn btn-outline-dark btn-lg" type="submit" value={{ tag[0][0] }}>
-                            {{ tag[0][1] }}
-                        </button>
-                    </li>
-                {% endfor %}
-            </ul>
-     </form>
-      </div>
-    </nav>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+                    aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <form action="/discover" method="POST">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <button name="filter_websites" class="btn btn-outline-dark btn-lg" type="submit"
+                                    value="{{ None }}">All
+                            </button>
+                        </li>
+                        {% for tag in discovery %}
+                            <li class="nav-item">
+                                <button name="filter_websites" class="btn btn-outline-dark btn-lg" type="submit"
+                                        value={{ tag.name }}>
+                                    {{ tag.name }}
+                                </button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </form>
+            </div>
+        </nav>
         <div class="row">
             {% for tag_group in discovery %}
-                <h2>{{ tag_group[0][1] }}</h2>
-                {% for website in tag_group[1:] %}
+                <h2 class="panel-title px-2 mt-4">
+                    <a data-toggle="collapse" href="#collapse{{ tag_group.id }}"
+                       class="text-muted text-decoration-none">
+                        <span class="text-dark">{{ tag_group.name }}</span>
+                        <span data-feather="chevron-down" class="text-muted "></span>
 
-                <div class="d-flex justify-content-between">
-                    <h4 class="h4">Website: {{ website[0] }}</h4>
+                    </a>
+                </h2>
 
-                    <form method="POST">
-                        <button name="add_discovery_feed"  class="btn-secondary" value="{{ website[0] }}">Add to personal feed</button>
-                                        <input type="hidden" name="source_link" value="{{ website[1] }}">
-                                        <input type="hidden" name="source_tag" value="{{ website[2] }}">
-                    </form>
+                <div id="collapse{{ tag_group.id }}" class="panel-collapse collapse show ">
+                    <ul class="list-group list-group-flush">
 
-                </div>
-                <div class="d-sm-inline-block">
+                        {% for website in discovery[tag_group] %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="panel-title">
+                                        <a data-toggle="collapse" href="#collapse{{ website.title }}"
+                                           class="text-muted text-decoration-none">
+                                            <span class="text-dark">Website: {{ website.title }}</span>
+                                            <span data-feather="chevron-down" class="text-muted "></span>
 
-                </div>
-
-
-
-
-
-                        {% for article in website[3:] %}
-
-                            <div class="col-sm-5">
-                                <div class="card">
-                                    <div class="card-body">
-
-
-                                        <h5 class="card-title">{{ article['title'] }}</h5>
-
-                                        <p class="card-text">{{ article['desc'] }}</p>
-
-
-                                        <a href="{{ article['link'] }}" class="btn btn-primary">Go to article</a>
-                                        <form action="/discover" method="POST">
-                                            <button name="article_title" class="btn btn-secondary" type="submit"
-                                                    value="{{ article['title'] }}">
-                                                <input type="hidden" name="article_link" value="{{ article['link'] }}"/>
-                                                <input type="hidden" name="article_id" value="{{ tag_group[0][0] }}"/>
-                                                <input type="hidden" name="article_desc"
-                                                       value="{{ article['desc'] }}"/>
-                                                <input type="hidden" name="source_link" value="{{ website }}"/>
-                                                Add to reading list
-                                            </button>
-                                        </form>
-                                    </div>
+                                        </a></h5>
+                                    <form method="POST">
+                                        <button name="add_discovery_feed" class="btn-secondary"
+                                                value="{{ website.title }}">Add to
+                                            personal feed
+                                        </button>
+                                        <input type="hidden" name="source_link" value="{{ website.link }}">
+                                        <input type="hidden" name="source_tag" value="{{ tag_group.id }}">
+                                    </form>
                                 </div>
+                            </li>
+
+                            <div id="collapse{{ website.title }}" class="panel-collapse collapse">
+                                <ul class="list-group list-group-flush">
+                                    <div class="row">
+                                    <!-- Due to the collapse containers nature, I need to use two columns to design the cards, instead of letting a fluid container do it. -->
+                                  <div class="col">
+                                      {% for article in website.articles[:2] %}
+                                        <li class="list-group-item list-group-flush">
+
+
+                                            <div class="col-md-11">
+                                                <div class="card">
+                                                    <div class="card-body">
+
+
+                                                        <h5 class="card-title">{{ article['title'] }}</h5>
+
+                                                        <p class="card-text">{{ article['desc'] }}</p>
+
+
+                                                        <a href="{{ article['link'] }}" class="btn btn-primary">Go to
+                                                            article</a>
+                                                        <form action="/discover" method="POST">
+                                                            <button name="article_title" class="btn btn-secondary"
+                                                                    type="submit"
+                                                                    value="{{ article['title'] }}">
+                                                                <input type="hidden" name="article_link"
+                                                                       value="{{ article['link'] }}"/>
+                                                                <input type="hidden" name="tag_id"
+                                                                       value="{{ tag_group.id }}"/>
+                                                                <input type="hidden" name="article_desc"
+                                                                       value="{{ article['desc'] }}"/>
+                                                                <input type="hidden" name="source_link"
+                                                                       value="{{ website.link }}"/>
+                                                                Add to reading list
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+
+
+                                    {% endfor %}
+                                  </div>
+                                  <div class="col">
+                                      {% for article in website.articles[2:] %}
+                                        <li class="list-group-item list-group-flush">
+
+
+                                            <div class="col-md-11">
+                                                <div class="card">
+                                                    <div class="card-body">
+
+
+                                                        <h5 class="card-title">{{ article['title'] }}</h5>
+
+                                                        <p class="card-text">{{ article['desc'] }}</p>
+
+
+                                                        <a href="{{ article['link'] }}" class="btn btn-primary">Go to
+                                                            article</a>
+                                                        <form action="/discover" method="POST">
+                                                            <button name="article_title" class="btn btn-secondary"
+                                                                    type="submit"
+                                                                    value="{{ article['title'] }}">
+                                                                <input type="hidden" name="article_link"
+                                                                       value="{{ article['link'] }}"/>
+                                                                <input type="hidden" name="tag_id"
+                                                                       value="{{ tag_group.id }}"/>
+                                                                <input type="hidden" name="article_desc"
+                                                                       value="{{ article['desc'] }}"/>
+                                                                <input type="hidden" name="source_link"
+                                                                       value="{{ website.link }}"/>
+                                                                Add to reading list
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+
+
+                                    {% endfor %}
+                                  </div>
+
+                                </ul>
                             </div>
                         {% endfor %}
-                    {% endfor %}
+
+                    </ul>
+                </div>
+
             {% endfor %}
+
+
         </div>
     </main>
+
+    <!-- Bootstrap core JavaScript
+        ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>
+        feather.replace()
+    </script>
 {% endblock %}

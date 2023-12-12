@@ -34,10 +34,11 @@ def home():
 
 
         website = User_Website_Link.query.filter_by(rss_data_id=website_id, user_id=current_user.id).first()
-
+        website.clicks += 1
 
         if "feed_link" in request.form:
             interaction = User_Interaction(user_id=current_user.id,tag_id=website.rss_data.tag_id,interaction_type="Parse")
+
             db.session.add(interaction)
             db.session.commit()
             website_link = request.form.get('feed_link')
@@ -204,8 +205,9 @@ def read_later():
 @login_required
 def discover():
     # Runs discovery algorithm to prioritise tags
-    user_recommended_tags = top_interaction_recommendation_algorithm()
-    user_websites_sorted = []
+
+    user_recommended_websites = weighted_recommendation_algorithm()
+
 
     # --- Separation for all the POST method code --- #
     if request.method == 'POST':
@@ -232,8 +234,8 @@ def discover():
 
                 link = request.form.get('article_link')
                 description = request.form.get('article_desc')
-                article_id = request.form.get('article_id')
-                saved_article = Readlist(art_title=title, art_desc=description, art_link=link, tag_id=article_id)
+                tag_id = request.form.get('tag_id')
+                saved_article = Readlist(art_title=title, art_desc=description, art_link=link, tag_id=tag_id)
                 db.session.add(saved_article)
                 db.session.commit()
                 new_readlist_link = User_Readlist_Link(user_id=current_user.id, readlist_id=saved_article.id)
@@ -248,50 +250,37 @@ def discover():
             db.session.commit()
         if "filter_websites" in request.form:
             user_desired_tag = request.form.get("filter_websites")
+            relevant_tag = Tags.query.filter_by(name=user_desired_tag).first()
             if user_desired_tag == "None":
-                user_recommended_tags = top_interaction_recommendation_algorithm()
+                user_recommended_websites = weighted_recommendation_algorithm()
             else:
+                print(user_recommended_websites[relevant_tag])
+                user_recommended_websites = {relevant_tag : user_recommended_websites[relevant_tag]}
 
-                user_recommended_tags = [user_desired_tag]
 
     # --- END SEPARATION --- #
-    global_websites = RSS_Data.query.all()
+    for tag in user_recommended_websites:
+        for website in user_recommended_websites[tag]:
+            feed = feedparser.parse(website.link)
+            individual_articles = feed['entries'][0:4]
+            articles = []
+            # Stores individual articles as a dictionary in a list, this list is associated with its source link title
+            for article in individual_articles:
+                # Try and except to catch out missing description discrepancies between sites
+                try:
+                    individual_articles_temp = {'title': f'{article.title}', 'desc': f'{article.description}',
+                                                'link': f'{article.link}'}
+                except AttributeError:
+                    individual_articles_temp = {'title': f'{article.title}',
+                                                'desc': f'No Description could be found for this article.',
+                                                'link': f'{article.link}'}
+                articles.append(individual_articles_temp)
+            website.articles = articles
 
-    for user_tag in user_recommended_tags:
-        relevant_tag = Tags.query.filter_by(id=user_tag).first()
-        individual_tag_groups = [[relevant_tag.id, relevant_tag.name]]
 
-        for website in global_websites:
-            website_existing = False
-            # Checks if user has already added the website to their personal feed. IF they have, it does not appear.
-            for website_links in website.users:
-                if website_links.user_id == current_user.id:
-                    website_existing = True
 
-            if not website_existing:
 
-                if website.tag_id == int(user_tag):
-
-                    related_website = [f"{website.title}", f"{website.link}", f"{website.tag_id}"]
-                    feed = feedparser.parse(website.link)
-                    individual_articles = feed['entries'][0:4]
-                    # Stores individual articles as a dictionary in a list, this list is associated with its source link title
-                    for article in individual_articles:
-                        # Try and except to catch out missing description discrepancies between sites
-                        try:
-                            individual_articles_temp = {'title': f'{article.title}', 'desc': f'{article.description}',
-                                                        'link': f'{article.link}'}
-                        except AttributeError:
-                            individual_articles_temp = {'title': f'{article.title}',
-                                                        'desc': f'No Description could be found for this article.',
-                                                        'link': f'{article.link}'}
-
-                        related_website.append(individual_articles_temp)
-                    individual_tag_groups.append(related_website)
-
-        if len(individual_tag_groups) != 1:
-            user_websites_sorted.append(individual_tag_groups)
-    return render_template("discover.html", user=current_user, discovery=user_websites_sorted)
+    return render_template("discover.html", user=current_user, discovery=user_recommended_websites)
 
 @views.route('/user_stats', methods=['GET', 'POST'])
 @login_required

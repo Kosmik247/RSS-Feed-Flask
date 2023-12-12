@@ -24,7 +24,7 @@ def weighted_calculation():
 
         # Calculating how recently the user interacted with the website
         time_difference = datetime.now() - interaction.time_of_interaction
-        recent_factor = 1 / (1 + recent_weight * time_difference.total_seconds() / 3600)
+        recent_factor = 1 / (1 + recent_weight * time_difference.total_seconds()) # Add another divider to decrease effect
 
         tag_weights_calc = weight * recent_factor
 
@@ -42,10 +42,16 @@ def weighted_recommendation_algorithm():
     sorted_tags = sorted(tag_weights.keys(), key=lambda tag: tag_weights[tag], reverse=True)
     for tag in sorted_tags:
         tag_websites = RSS_Data.query.filter_by(tag_id=tag.id).all()
-        for website in tag_websites:
+
+        for website in tag_websites.copy():
+
+            website.__dict__['articles'] = {}
             if any(user_websites.rss_data == website for user_websites in current_user.rss_data):
+
                 tag_websites.remove(website)
-        recommended_websites[tag] = tag_websites
+        random.shuffle(tag_websites)
+        if len(tag_websites) != 0:
+            recommended_websites[tag] = tag_websites[:2] # Change number to change how many websites get shown on discover
 
     return recommended_websites
 
