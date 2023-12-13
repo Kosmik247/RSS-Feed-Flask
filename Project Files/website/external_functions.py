@@ -30,7 +30,7 @@ def weighted_calculation():
 
         if interaction.tag in tag_weights:
             tag_weights[interaction.tag] += tag_weights_calc
-
+    print(tag_weights)
     return tag_weights
 
 def weighted_recommendation_algorithm():

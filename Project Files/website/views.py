@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 import feedparser
 from . import db
@@ -11,7 +11,7 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    print(weighted_recommendation_algorithm())
+
 
     website_link = 'None'
     website = None
@@ -197,7 +197,7 @@ def read_later():
             user_tags = [{'tag_id': tag_filter,
                           'tag_name': f'{global_tags[tag_filter-1].name}'}]
             print(user_tags)
-        ...
+
     return render_template("read_later.html", user=current_user, tags=user_tags)
 
 
@@ -248,6 +248,8 @@ def discover():
             website_link_to_add = User_Website_Link(user_id=current_user.id, rss_data_id=website_to_add.id, clicks=0)
             db.session.add(website_link_to_add)
             db.session.commit()
+            return redirect(url_for('views.home',run_path="/home"))
+
         if "filter_websites" in request.form:
             user_desired_tag = request.form.get("filter_websites")
             relevant_tag = Tags.query.filter_by(name=user_desired_tag).first()
