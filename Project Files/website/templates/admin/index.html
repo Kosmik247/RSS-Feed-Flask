@@ -1,0 +1,55 @@
+{% extends 'admin/master.html' %}
+
+{% block body %}
+    <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+      let js_activity = {{ user_activity | tojson | safe }}; // Get the list of tag names
+      var tags = {{ tags | tojson | safe }}; // Get the list of tag names
+      function drawChart() {
+
+        var data = new google.visualization.DataTable();
+          for (var i = 0; i < js_activity[0].length; i++) {
+                // Add columns to the DataTable
+                if (i === 0) {
+                    data.addColumn('string', js_activity[0][i]); // Assume the first column is of type 'string'
+                } else {
+                    data.addColumn('number', js_activity[0][i]); // Assume the other columns are of type 'number'
+                }
+            }
+
+            data.addRows(js_activity.slice(1));
+        var options = {
+                title: 'Interactions Over Time',
+                curveType: 'function',
+                legend: {position: 'bottom'},
+                hAxis: {
+                    title: 'Date',
+                    format: 'MMM d, yyyy'
+                },
+                vAxis: {
+                    title: 'Interaction Count'
+                }
+            };
+
+        var chart = new google.visualization.AreaChart(document.getElementById('curve_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+
+    <div class="container-fluid">
+        <div class="text-right mx-auto">
+            <a href="{{ url_for('views.home') }}" class="btn btn-primary">
+                Back to Website
+            </a>
+        </div>
+        <h1>Admin Dashboard</h1>
+        <h2>Statistics</h2>
+        <div id="curve_chart" style="width: 900px; height: 500px"></div>
+
+    </div>
+{% endblock %}

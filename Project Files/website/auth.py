@@ -1,10 +1,13 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .db_models import User, RSS_Data, User_Website_Link, User_Readlist_Link, Readlist
 from werkzeug.security import generate_password_hash, check_password_hash
-from . import db
-from flask_login import login_user, login_required, logout_user, current_user
 
+from flask_login import login_user, login_required, logout_user, current_user
+from flask_admin.contrib.sqla import ModelView
 auth = Blueprint('auth', __name__)
+
+
+
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -146,3 +149,4 @@ def delete_account():
     db.session.commit()
 
     return render_template("login.html", user=current_user)
+

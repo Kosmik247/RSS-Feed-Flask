@@ -21,9 +21,13 @@
                 <a class="nav-item nav-link" id="add_links" href="/add_links">Websites Stored</a>
                 <a class="nav-item nav-link" id="read_later" href="/read_later">ReadList</a>
                 <a class="nav-item nav-link" id="user_stats" href="/user_stats">Personal Stats</a>
+
             {% else %}
                 <a class="nav-item nav-link" id="login" href="/login">Login</a>
                 <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
+            {% endif %}
+            {% if user.id == 1 %}
+                    <a class="nav-item nav-link" id="admin" href="/admin">Admin Dashboard</a>
             {% endif %}
         </div>
         {% if user.is_authenticated %}
