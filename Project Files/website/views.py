@@ -41,14 +41,11 @@ def home():
 
             db.session.add(interaction)
             db.session.commit()
-            website_link = request.form.get('feed_link')
+            website_link = website.rss_data.link
+
+
             website = RSS_Data.query.filter_by(link=website_link).first()
 
-            if website:
-                website_link = website.link
-            else:
-                print("No websites stored in database.")
-                website_link = "None"
 
         if "art_tag_id" in request.form:
             interaction = User_Interaction(user_id=current_user.id, tag_id=website.rss_data.tag_id,interaction_type="Save")
