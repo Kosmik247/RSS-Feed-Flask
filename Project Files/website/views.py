@@ -37,6 +37,7 @@ def home():
         website.clicks += 1
 
         if "feed_link" in request.form:
+
             interaction = User_Interaction(user_id=current_user.id,tag_id=website.rss_data.tag_id,interaction_type="Parse")
 
             db.session.add(interaction)

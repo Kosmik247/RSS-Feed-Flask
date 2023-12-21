@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .db_models import User, RSS_Data, User_Website_Link, User_Readlist_Link, Readlist
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_admin.contrib.sqla import ModelView
 auth = Blueprint('auth', __name__)
@@ -49,7 +49,7 @@ def profile():
         elif len(password_1_n) < 5:
             flash('Password must be at least 5 characters.', category='error')
         else:
-            current_user.password = generate_password_hash(password_1_n, method='scrypt', salt_length=16)
+            current_user.password = generate_password_hash(password_1_n)
             db.session.commit()
             flash('Password Changed', category='success')
     return render_template("profile.html", user=current_user)
@@ -94,7 +94,7 @@ def sign_up():
             flash('Password must be at least 5 characters.', category='error')
         else:
             new_user = User(email=email, username=username, password=generate_password_hash(
-                password_1, method='scrypt', salt_length=16))
+                password_1))
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
