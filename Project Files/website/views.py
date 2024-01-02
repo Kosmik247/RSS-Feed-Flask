@@ -105,7 +105,7 @@ def delete_website():
             else:
                 flash('Website not found', category='error')
 
-    return render_template("home.html", user=current_user)
+    return redirect(url_for('views.home',run_path="/home"))
 
 
 @views.route('/add_links', methods=['GET', 'POST'])
