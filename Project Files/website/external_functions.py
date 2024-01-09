@@ -50,7 +50,7 @@ def weighted_recommendation_algorithm():
 
                 tag_websites.remove(website)
         random.shuffle(tag_websites)
-        if len(tag_websites) != 0:
+        if tag_websites:
             recommended_websites[tag] = tag_websites[:2] # Change number to change how many websites get shown on discover
 
     return recommended_websites
