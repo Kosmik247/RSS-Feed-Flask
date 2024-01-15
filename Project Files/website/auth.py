@@ -3,7 +3,8 @@ from .db_models import User, RSS_Data, User_Website_Link, User_Readlist_Link, Re
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
-from flask_admin.contrib.sqla import ModelView
+
+# ---- Blueprint Registration ---- #
 auth = Blueprint('auth', __name__)
 
 
@@ -12,6 +13,21 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    """A function that is called when a user wants to log in to their account.
+
+    Variables
+    ----------
+    email : str
+        email to be checked from records
+    password : str
+        password to be checked against password associated with email supplied
+
+    Returns
+    -------
+    None: Returns user to home page if successful
+          Returns user to login page if unsuccessful
+
+    """
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -32,12 +48,37 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
+    """A function that is called when a user logs out (logs out of internal login manager).
+
+    Variables
+    ----------
+    None
+
+    Returns
+    -------
+    None: Returns user to login page
+
+    """
     logout_user()
     return redirect(url_for('auth.login'))
 
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    """A function that is called when a user wants to access their account profile.
+
+    Variables
+    ----------
+    password_1_n : str
+        new password to be stored to the associated user
+    password_2_n : str
+        a verification variable to check password 1 is the correct password
+
+    Returns
+    -------
+    None: Returns user to profile page
+
+    """
     if request.method == 'POST':
         print(current_user.username)
         password_1_n = request.form.get('password_1')
@@ -70,6 +111,7 @@ def sign_up():
         a verification variable to check password 1 is the correct password  
     new_user : str
         the new user to be added to the database if all checks run correctly
+
     Returns
     -------
     None: Returns user to home page
@@ -118,6 +160,7 @@ def delete_account():
 
     del_user : str
         The current user held in temporary variable form
+
     Returns
     -------
     None: Returns user to login page
