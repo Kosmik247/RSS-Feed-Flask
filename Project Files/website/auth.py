@@ -24,24 +24,34 @@ def login():
 
     Returns
     -------
-    None: Returns user to home page if successful
+    User : Class object
+          Returns user to home page if successful
           Returns user to login page if unsuccessful
 
     """
     if request.method == 'POST':
+        # If post request received from webpage, queries these specific variables from form
         email = request.form.get('email')
         password = request.form.get('password')
 
+        # Checks for existence of user
         user = User.query.filter_by(email=email).first()
+
+        # If user exists
         if user:
+            # Hashes the input password and checks it against the hashed password stored in the database
             if check_password_hash(user.password, password):
+                # If the hash matches, it logs the user in and caches the users login
                 flash('Logged in successfully!', category='success')
                 login_user(user, remember=True)
                 return redirect(url_for('views.home'))
+                # If hash doesn't match, flags an error
             else:
                 flash('Incorrect password, try again.', category='error')
+        # If user doesn't exist, flags an error to the user
         else:
             flash('Email does not exist.', category='error')
+    # If no post request, user remains on same webage
     return render_template("login.html", user=current_user)
 
 
@@ -59,13 +69,16 @@ def logout():
     None: Returns user to login page
 
     """
+    # Uses the flask_login "logout_user" function to log user out of the user login
     logout_user()
+
+    # Returns the user to the login page
     return redirect(url_for('auth.login'))
 
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    """A function that is called when a user wants to access their account profile.
+    """The profile function called when a user requests to go to their profile.
 
     Variables
     ----------
@@ -74,30 +87,39 @@ def profile():
     password_2_n : str
         a verification variable to check password 1 is the correct password
 
+
     Returns
     -------
-    None: Returns user to profile page
+    User : Class object
+        Returns user to profile page
 
     """
     if request.method == 'POST':
+        # If post request received from user
         print(current_user.username)
+
+        # Gets form inputs for password changes
         password_1_n = request.form.get('password_1')
         password_2_n = request.form.get('password_2')
 
+        # If passwords don't match, doesn't change the password
         if password_1_n != password_2_n:
             flash('Passwords don\'t match.', category='error')
-
+        # If password does not match minimum parameters, doesn't change password
         elif len(password_1_n) < 5:
             flash('Password must be at least 5 characters.', category='error')
         else:
+            # Generates hash from new password and updates the user password
             current_user.password = generate_password_hash(password_1_n)
             db.session.commit()
             flash('Password Changed', category='success')
+
+    # Returns user to profile page
     return render_template("profile.html", user=current_user)
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
-    """A function that is called when a user wants to create an account.
+    """The signup function called when a user creates an account.
 
     Variables
     ----------
@@ -114,10 +136,13 @@ def sign_up():
 
     Returns
     -------
-    None: Returns user to home page
+    User : Class object
+
+        Returns user to home page
 
     """
     if request.method == 'POST':
+
         email = request.form.get('email')
         username = request.form.get('username')
         password_1 = request.form.get('password_1')
@@ -148,7 +173,7 @@ def sign_up():
 
 @auth.route('/delete-account', methods=['POST'])
 def delete_account():
-    """A function that is called when a user wants to delete their account.
+    """The function that is called when a user wants to delete their account.
 
     Variables
     ----------
@@ -158,12 +183,15 @@ def delete_account():
     user_websites : list of str
         A list of websites associated with the user
 
+    user_articles : list of str
+        A list of articles associated with the user
+
     del_user : str
         The current user held in temporary variable form
 
     Returns
     -------
-    None: Returns user to login page
+    None : Returns user to login page
 
     """
     user_id = request.form.get('account_id')
@@ -186,10 +214,10 @@ def delete_account():
         db.session.delete(website)
 
     del_user = User.query.get(user_id)
-    logout()
+    logout_user()
 
     db.session.delete(del_user)
     db.session.commit()
 
-    return render_template("login.html", user=current_user)
+    return redirect(url_for('auth.login'))
 
