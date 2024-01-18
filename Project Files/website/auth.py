@@ -29,6 +29,7 @@ def login():
           Returns user to login page if unsuccessful
 
     """
+    # If user is already logged in, redirect to home
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
     if request .method == 'POST':
@@ -139,7 +140,7 @@ def sign_up():
     -------
     User : Class object
 
-        Returns user to home page
+        Returns user to discovery page
 
     """
     if request.method == 'POST':

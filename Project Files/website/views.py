@@ -7,12 +7,42 @@ from .external_functions import top_interaction_recommendation_algorithm, tag_co
 views = Blueprint('views', __name__)
 
 
-# Could use Jsonify as an alternative packaging tool for the returned information.
+
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
+    """A function that is called when a user wants to go to the home page.
 
+        Variables
+        ----------
+        website_link : str
+        website : class object
+        user_tags : list
+        global_tags : list of class objects
+        user_saved_websites : list of class objects
+        tags_format : dict
+        website_id : int
+        interaction : class object
+        tag_id : int
+        title : str
+        description : str
+        article_link : str
+        existing_article : class object
+        user_existing_article: bool
+        new_user_entry : class object
 
+        Returns
+        -------
+        user : Class object
+                Returns user to home page
+        tags : List of class objects
+                Supplies homepage with the user tags
+        feeds : Dictionary of class object
+                Supplies homepage with user websites
+        website : Class object
+                RSS class object
+    """
+    # Initialisation of function variables to prevent errors
     website_link = 'None'
     website = None
     user_tags = []
@@ -21,6 +51,7 @@ def home():
 
     user_saved_websites = current_user.rss_data
 
+    # Checks every website to see what tags the user has added. Only adds the tags the user has selected to filter
     for user_web in user_saved_websites:
 
         tags_format = {'tag_id': user_web.rss_data.tag_id,
@@ -28,27 +59,29 @@ def home():
         if tags_format not in user_tags:
             user_tags.append(tags_format)
 
-
+    # If post method request to webpage
     if request.method == 'POST':
         website_id = request.form.get('website_id')
 
-
+        # Every post request on home that has a website_id is counted as an interaction, which increments the click by 1
         website = User_Website_Link.query.filter_by(rss_data_id=website_id, user_id=current_user.id).first()
         website.clicks += 1
 
+        # Checks the request.form for specific entries to enable different parts of the function
         if "feed_link" in request.form:
-
+            # Creates an entry in the interaction table, with the type "parse" - NB: Different interactions have different types(see external functions for code)
             interaction = User_Interaction(user_id=current_user.id,tag_id=website.rss_data.tag_id,interaction_type="Parse")
 
             db.session.add(interaction)
             db.session.commit()
             website_link = website.rss_data.link
 
-
+            # Finds the website from the link
             website = RSS_Data.query.filter_by(link=website_link).first()
 
 
         if "art_tag_id" in request.form:
+            # Creates an interaction entry and obtains all the variables for the article
             interaction = User_Interaction(user_id=current_user.id, tag_id=website.rss_data.tag_id,interaction_type="Save")
             db.session.add(interaction)
             db.session.commit()
@@ -59,7 +92,7 @@ def home():
 
 
             existing_article = Readlist.query.filter_by(art_title=title).first()
-
+            # If article doesn't exist, creates an entry to the article database and saves it
             if not existing_article:
                 tag_instance = Tags.query.get(tag_id)
                 saved_article = Readlist(art_title=title, art_desc=description, art_link=article_link, tag=tag_instance)
@@ -67,13 +100,17 @@ def home():
                 db.session.commit()
                 existing_article = saved_article
             user_existing_article = False
+            # Checks if user has already saved the article
             for article in current_user.readlist:
                 if article.readlist.art_title == title:
                     user_existing_article = True
+            # If article not saved, links article to users
             if user_existing_article == False:
                 new_user_entry = User_Readlist_Link(user_id=current_user.id, readlist_id=existing_article.id)
                 db.session.add(new_user_entry)
                 db.session.commit()
+                flash('Article saved', category='success')
+            # If article saved, flashes a warning
             elif user_existing_article == True:
                 flash('Article already saved', category='error')
 
@@ -87,17 +124,33 @@ def home():
 @views.route('/delete-website', methods=['POST'])
 @login_required
 def delete_website():
+    """A function that is called when a user wants to go to the home page.
+
+        Variables
+        ----------
+        website_id : int
+        link_table_website : Class object
+
+        Returns
+        -------
+        None : Returns user to home
+    """
+    # If post request received
     if request.method == 'POST':
+        # If delete link is in the form
         if "delete_link" in request.form:
+            # Gets the existing link between the user and the website
             website_id = request.form.get('id')
             link_table_website = User_Website_Link.query.filter_by(rss_data_id=website_id, user_id=current_user.id).first()
             print(link_table_website)
+            # If the website is linked to the user account
             if link_table_website:
                 if link_table_website.user_id == current_user.id:
                     website = RSS_Data.query.get(website_id)
+                    # Deletes the website if there is only the connection between user and website left
                     if len(website.users) == 1:
                         db.session.delete(website)
-
+                    # Deletes link between the website and user
                     db.session.delete(link_table_website)
 
                     db.session.commit()
@@ -151,6 +204,7 @@ def add_links():
                 db.session.commit()
                 new_website_link = User_Website_Link(user_id=current_user.id, rss_data_id=new_website.id, clicks=0)
                 db.session.add(new_website_link)
+                flash('This title has been added', category='success')
             db.session.commit()
 
 
@@ -185,7 +239,7 @@ def read_later():
             if len(article_to_del.users) == 1: # 0 value since the linked user is deleted beforehand, so it will have an empty associated list.
                 db.session.delete(article_to_del)
             db.session.commit()
-
+            flash('Article removed', category='success')
         # --- Refreshes the webpage with the relevant filters --- #
         if "filter_article" in request.form:
             tag_filter = request.form.get('filter_article')
@@ -220,16 +274,13 @@ def discover():
             print(readlist_link)
             if existing_article and readlist_link:
                 # If statement that evaluates if article and readlist exists
-                print("True")
                 flash('Article already saved', category='error')
             elif existing_article and readlist_link == None:
-                print(True)
                 # Function that finds an existing article and adds it to the users articles.
                 new_readlist_link = User_Readlist_Link(user_id=current_user.id, readlist_id=existing_article.id)
                 db.session.add(new_readlist_link)
                 flash('Article saved', category='success')
             else:
-
                 link = request.form.get('article_link')
                 description = request.form.get('article_desc')
                 tag_id = request.form.get('tag_id')
@@ -246,6 +297,7 @@ def discover():
             website_link_to_add = User_Website_Link(user_id=current_user.id, rss_data_id=website_to_add.id, clicks=0)
             db.session.add(website_link_to_add)
             db.session.commit()
+            flash('Title added to home feed', category='success')
             return redirect(url_for('views.home',run_path="/home"))
 
         if "filter_websites" in request.form:
