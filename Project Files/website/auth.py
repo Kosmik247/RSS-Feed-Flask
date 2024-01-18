@@ -53,7 +53,7 @@ def login():
         # If user doesn't exist, flags an error to the user
         else:
             flash('Email does not exist', category='error')
-    # If no post request, user remains on same webage
+    # If no post request, user remains on same webpage
     return render_template("login.html", user=current_user)
 
 
@@ -88,7 +88,6 @@ def profile():
         new password to be stored to the associated user
     password_2_n : str
         a verification variable to check password 1 is the correct password
-
 
     Returns
     -------
@@ -207,13 +206,16 @@ def delete_account():
     # If there is only one user with the article, it deletes the article
     for article in user_articles:
         article_existence = Readlist.query.get(article.readlist_id)
+        print(article_existence.users)
         if len(article_existence.users) == 1:
             db.session.delete(article_existence)
         db.session.delete(article)
 
     # If there is only one user with the website, it deletes the website (in case personal websites are added)
     for website in user_websites:
+        print(website)
         website_existence = RSS_Data.query.get(website.rss_data_id)
+        print(website_existence.users)
         if len(website_existence.users) == 1:
             db.session.delete(website_existence)
         db.session.delete(website)
