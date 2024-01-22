@@ -39,7 +39,13 @@ def weighted_recommendation_algorithm():
     tag_weights = weighted_calculation()
     recommended_websites = {}
     # Sort tags based on weighted popularity
-    sorted_tags = sorted(tag_weights.keys(), key=lambda tag: tag_weights[tag], reverse=True)
+    tags_to_sort = list(tag_weights.keys())
+    # --------- REMOVE ---------- #
+    #print(tags_to_sort)
+    #sorted_tags = sorted(tag_weights.keys(), key=lambda tag: tag_weights[tag], reverse=True)
+    #print(sorted_tags)
+    sorted_tags = insertion_sort(tags_to_sort, tag_weights)
+
     for tag in sorted_tags:
         tag_websites = RSS_Data.query.filter_by(tag_id=tag.id).all()
 
@@ -55,6 +61,18 @@ def weighted_recommendation_algorithm():
 
     return recommended_websites
 
+def insertion_sort(tags_to_sort,tag_weights):
+    for i in range(len(tags_to_sort)):
+        current_tag = tags_to_sort[i]
+
+        j = i - 1
+        while j >= 0 and tag_weights[current_tag] > tag_weights[tags_to_sort[j]]:
+
+            tags_to_sort[j + 1] = tags_to_sort[j]
+            j -= 1
+
+        tags_to_sort[j + 1] = current_tag
+    return tags_to_sort
 
 
 

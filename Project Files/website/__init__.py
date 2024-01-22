@@ -19,7 +19,8 @@ def create_app():
     app: class
         the flask application as a contained class
 
-    Notes ----------
+    Notes
+    ----------
     This function initialises the application with all database models defined. It also registers
     all flask blueprints within the module for use as well as the files behind them.
 
