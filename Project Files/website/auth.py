@@ -139,8 +139,8 @@ def sign_up():
     Returns
     -------
     User : Class object
-
-        Returns user to discovery page
+          Returns user to discover page if successful
+          Returns user to signup page if unsuccessful
 
     """
     if request.method == 'POST':
@@ -184,13 +184,10 @@ def delete_account():
     ----------
     user_id : int
         id of user who clicked the button
-
     user_websites : list of str
         A list of websites associated with the user
-
     user_articles : list of str
         A list of articles associated with the user
-
     del_user : str
         The current user held in temporary variable form
 

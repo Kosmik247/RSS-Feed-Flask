@@ -337,7 +337,11 @@ def discover():
 @views.route('/user_stats', methods=['GET', 'POST'])
 @login_required
 def user_stats():
-    """The function behind the user statistics page, it returns all required data."""
+    """A function that is called when a user wants to go to the stats.
+
+        NOT DONE
+
+    """
     global_tags = Tags.query.all()
     global_tags_named = [tag.name for tag in global_tags]
     global_tags_id = [tag.id for tag in global_tags]

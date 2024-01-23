@@ -26,7 +26,7 @@ class User_Readlist_Link(db.Model):
     readlist = db.relationship('Readlist', back_populates='users')
 
 # Defining User Table
-# Usermixin is inherited by the user to allow the user class to use authentication parameters
+# Usermixin is inherited by the user to allow the user class to use authentication parameters from the flask-login module
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(150), unique=True)
@@ -55,7 +55,6 @@ class Readlist(db.Model):
     art_link = db.Column(db.String(10000))
     tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'))
     # Define relationships
-
     tag = db.relationship('Tags', back_populates='readlist')
     users = db.relationship('User_Readlist_Link', back_populates='readlist')
 
