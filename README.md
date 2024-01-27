@@ -1,16 +1,11 @@
-<a name="RSS-Newsfeed-Global Reader"/>
+<a name="RSS-Newsfeed-GlobalReader"/>
 # RSS-Newsfeed-Global Reader 
 
 Documentation for the RSS-Newsfeed-Global Flask project. This is an A-level project made for AQA-NEA and reflects a two year course.
 
-<a name="Table of contents"/>
-# Table of contents
-1. [Title Content] (#RSS-Newsfeed-Global Reader)
-2. [Table of contents] (#Table of contents)
+<a name="Tableofcontents"/>
+##### Table of contents
+1. [Title Content](#RSS-Newsfeed-GlobalReader)
+2. [Table of contents](#Tableofcontents)
   
-##### Table of Contents  
-[Headers](#headers)  
-[Emphasis](#emphasis)  
-...snip...    
-<a name="headers"/>
-## Headers
+
