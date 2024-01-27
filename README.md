@@ -3,10 +3,10 @@
 Documentation for the RSS-Newsfeed-Global Flask project. This is an A-level project made for AQA-NEA and reflects a two year course.
 
 # Table of contents
-- [RSS-Newsfeed-Global Reader](#rss-newsfeed-global-reader)
-- [Table of contents](#table-of-contents)
-- [Installation / Deployment](#installation-and-deployment)
-- [Using the website](#using-the-website)
+1 [RSS-Newsfeed-Global Reader](#rss-newsfeed-global-reader)
+2 [Table of contents](#table-of-contents)
+3 [Installation / Deployment](#installation-and-deployment)
+4 [Using the website](#using-the-website)
 
 
 
