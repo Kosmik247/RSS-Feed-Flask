@@ -31,4 +31,4 @@ The left sidebar allows for navigation between websites of different tags. Selec
 *Discover Page*
 Randomly selects unsaved websites from the database and presents each one to the user in their tag groupings. Tags are recommended based on a weighting system and will vary.
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
