@@ -70,7 +70,7 @@ def database_intialisation(app):
     None
 
     """
-    if not path.exists('PF/main_database.db'):
-        with app.app_context():
-            db.create_all()
+
+    with app.app_context():
+        db.create_all()
 
