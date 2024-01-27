@@ -5,7 +5,7 @@ Documentation for the RSS-Newsfeed-Global Flask project. This is an A-level proj
 # Table of contents
 - [RSS-Newsfeed-Global Reader](#rss-newsfeed-global-reader)
 - [Table of contents](#table-of-contents)
-- [Installation / Deployment](#installation---deployment)
+- [Installation / Deployment](#installation-/-deployment)
 - [Using the website](#using-the-website)
 
 
