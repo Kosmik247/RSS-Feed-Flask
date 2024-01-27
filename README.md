@@ -5,13 +5,13 @@ Documentation for the RSS-Newsfeed-Global Flask project. This is an A-level proj
 # Table of contents
 - [RSS-Newsfeed-Global Reader](#rss-newsfeed-global-reader)
 - [Table of contents](#table-of-contents)
-- [Installation / Deployment](#installation-/-deployment)
+- [Installation / Deployment](#installation-and-deployment)
 - [Using the website](#using-the-website)
 
 
 
 
-# Installation / Deployment
+# Installation and Deployment
 1. Download or clone this repository 
 2. Open terminal
 3. Navigate to project directory
