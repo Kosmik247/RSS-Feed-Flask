@@ -50,6 +50,7 @@ def create_app():
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
 
+    # Stores the user within the login manager, allowing for current_user variable to be used in program
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
@@ -70,7 +71,7 @@ def database_intialisation(app):
     None
 
     """
-
+    # Loads the database and creates the table if they weren't created before.
     with app.app_context():
         db.create_all()
 
