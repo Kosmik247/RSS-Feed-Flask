@@ -31,6 +31,8 @@ def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'sdadad hasdkjhsd akjhksdh'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///main_database.db'
+    # DEBUGGING
+    app.config["SQLALCHEMY_ECHO"] = True
 
     db.init_app(app)
     # Import of all database models for program use and initialises it in the database

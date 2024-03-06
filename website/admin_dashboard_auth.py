@@ -47,16 +47,12 @@ def time_difference_calc():
         chart_data.append([global_activity[data]['date'], global_activity[data]['interactions'], data.name])
 
     date_dictionary = {}
-
     for data_list in chart_data[1:]:
         if data_list[0] not in date_dictionary:
             date_dictionary[data_list[0]] = [{data_list[2]: data_list[1]}]
         else:
 
             date_dictionary[data_list[0]].append({data_list[2]: data_list[1]})
-
-
-
     tags = list({tag for date_data in date_dictionary.values() for tag_dictionary in date_data for tag in tag_dictionary})
 
     # Create a list of lists with default values

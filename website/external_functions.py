@@ -177,7 +177,7 @@ def global_tag_counter():
 
 
 # ----- DEPRECATED -----#
-# Below are older algorithms I used to both test the module and for other versions of the discovery algorithm before I implemented a weighting system
+# Below are older algorithms I used to both test the module and for other versions of the discovery algorithm to see how they performed.
 def test_alg():
     tag_clicks = {}
     tags = Tags.query.all()
