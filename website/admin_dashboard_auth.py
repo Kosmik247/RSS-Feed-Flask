@@ -1,11 +1,11 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .db_models import User, RSS_Data, User_Website_Link, User_Readlist_Link, Readlist, Tags, User_Interaction
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
-from flask_login import login_user, login_required, logout_user, current_user
-from flask_admin import AdminIndexView, expose
-from flask_admin.contrib.sqla import ModelView
+from flask import Blueprint, redirect, url_for
+from .db_models import Tags, User_Interaction
 
+from datetime import timedelta
+from flask_login import current_user
+from flask_admin import AdminIndexView, expose
+
+# Registers the blueprint within the flask application
 admin_dashboard = Blueprint('admin_dashboard', __name__)
 
 class Admin_View(AdminIndexView):
@@ -13,13 +13,28 @@ class Admin_View(AdminIndexView):
     @expose('/')
 
     def index(self):
+        """The function behind the main index file in the flask admin view.
+
+            Variables
+            ----------
+            activity : list of dates and activity\n
+            tags : List of classes
+
+            Returns
+            -------
+            returns user to admin page if admin
+                    if user not admin, redirects user to homepage
+        """
+        # Obtains all activity for the dates and tags
         activity = time_difference_calc()
         tags = Tags.query.all()
-
+        # Obtains the tag names from tags classes
         global_tags_named = [tag.name for tag in tags]
+        # If the user is not the admin, return user to home page
         if current_user.id != 1:
             print(current_user)
             return redirect(url_for('views.home'))
+        # Return user to the admin interface if admin
         return self.render('admin/index.html', user_activity=activity, tags=global_tags_named)
 
 
@@ -28,7 +43,20 @@ class Admin_View(AdminIndexView):
 
 
 def time_difference_calc():
-
+    """The function that calculates the difference in time between user interactions and their tags.
+        Variables
+        ----------
+        activity_data : list of database entries\n
+        global_activity : dict
+        date : DateTime
+        chart_data : list of lists
+        date_dictionary : dict
+        tags : list
+        date_lol : list of list
+        Returns
+        -------
+        returns date_lol
+    """
     activity_data = User_Interaction.query.all()
     global_activity = {}
     for interaction in activity_data:
