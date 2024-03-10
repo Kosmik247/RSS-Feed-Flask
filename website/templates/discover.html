@@ -23,7 +23,7 @@
                         {% for tag in discovery %}
                             <li class="nav-item">
                                 <button name="filter_websites" class="btn btn-outline-dark btn-lg" type="submit"
-                                        value={{ tag.name }}>
+                                        value='{{ tag.name }}'>
                                     {{ tag.name }}
                                 </button>
                             </li>
@@ -70,87 +70,91 @@
                             <div id="collapse{{ website.title }}" class="panel-collapse collapse">
                                 <ul class="list-group list-group-flush">
                                     <div class="row">
-                                    <!-- Due to the collapse containers nature, I need to use two columns to design the cards, instead of letting a fluid container do it. -->
-                                  <div class="col">
-                                      {% for article in website.articles[:2] %}
-                                        <li class="list-group-item list-group-flush">
+                                        <!-- Due to the collapse containers nature, I need to use two columns to design the cards, instead of letting a fluid container do it. -->
+                                        <div class="col">
+                                            {% for article in website.articles[:2] %}
+                                                <li class="list-group-item list-group-flush">
 
 
-                                            <div class="col-md-11">
-                                                <div class="card">
-                                                    <div class="card-body">
+                                                    <div class="col-md-11">
+                                                        <div class="card">
+                                                            <div class="card-body">
 
 
-                                                        <h5 class="card-title">{{ article['title'] }}</h5>
+                                                                <h5 class="card-title">{{ article['title'] }}</h5>
 
-                                                        <p class="card-text">{{ article['desc'] }}</p>
+                                                                <p class="card-text">{{ article['desc'] }}</p>
 
 
-                                                        <a href="{{ article['link'] }}" class="btn btn-primary">Go to
-                                                            article</a>
-                                                        <form action="/discover" method="POST">
-                                                            <button name="article_title" class="btn btn-secondary"
-                                                                    type="submit"
-                                                                    value="{{ article['title'] }}">
-                                                                <input type="hidden" name="article_link"
-                                                                       value="{{ article['link'] }}"/>
-                                                                <input type="hidden" name="tag_id"
-                                                                       value="{{ tag_group.id }}"/>
-                                                                <input type="hidden" name="article_desc"
-                                                                       value="{{ article['desc'] }}"/>
-                                                                <input type="hidden" name="source_link"
-                                                                       value="{{ website.link }}"/>
-                                                                Add to reading list
-                                                            </button>
-                                                        </form>
+                                                                <a href="{{ article['link'] }}" class="btn btn-primary">Go
+                                                                    to
+                                                                    article</a>
+                                                                <form action="/discover" method="POST">
+                                                                    <button name="article_title"
+                                                                            class="btn btn-secondary"
+                                                                            type="submit"
+                                                                            value="{{ article['title'] }}">
+                                                                        <input type="hidden" name="article_link"
+                                                                               value="{{ article['link'] }}"/>
+                                                                        <input type="hidden" name="tag_id"
+                                                                               value="{{ tag_group.id }}"/>
+                                                                        <input type="hidden" name="article_desc"
+                                                                               value="{{ article['desc'] }}"/>
+                                                                        <input type="hidden" name="source_link"
+                                                                               value="{{ website.link }}"/>
+                                                                        Add to reading list
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </li>
+                                                </li>
 
 
-                                    {% endfor %}
-                                  </div>
-                                  <div class="col">
-                                      {% for article in website.articles[2:] %}
-                                        <li class="list-group-item list-group-flush">
+                                            {% endfor %}
+                                        </div>
+                                        <div class="col">
+                                            {% for article in website.articles[2:] %}
+                                                <li class="list-group-item list-group-flush">
 
 
-                                            <div class="col-md-11">
-                                                <div class="card">
-                                                    <div class="card-body">
+                                                    <div class="col-md-11">
+                                                        <div class="card">
+                                                            <div class="card-body">
 
 
-                                                        <h5 class="card-title">{{ article['title'] }}</h5>
+                                                                <h5 class="card-title">{{ article['title'] }}</h5>
 
-                                                        <p class="card-text">{{ article['desc'] }}</p>
+                                                                <p class="card-text">{{ article['desc'] }}</p>
 
 
-                                                        <a href="{{ article['link'] }}" class="btn btn-primary">Go to
-                                                            article</a>
-                                                        <form action="/discover" method="POST">
-                                                            <button name="article_title" class="btn btn-secondary"
-                                                                    type="submit"
-                                                                    value="{{ article['title'] }}">
-                                                                <input type="hidden" name="article_link"
-                                                                       value="{{ article['link'] }}"/>
-                                                                <input type="hidden" name="tag_id"
-                                                                       value="{{ tag_group.id }}"/>
-                                                                <input type="hidden" name="article_desc"
-                                                                       value="{{ article['desc'] }}"/>
-                                                                <input type="hidden" name="source_link"
-                                                                       value="{{ website.link }}"/>
-                                                                Add to reading list
-                                                            </button>
-                                                        </form>
+                                                                <a href="{{ article['link'] }}" class="btn btn-primary">Go
+                                                                    to
+                                                                    article</a>
+                                                                <form action="/discover" method="POST">
+                                                                    <button name="article_title"
+                                                                            class="btn btn-secondary"
+                                                                            type="submit"
+                                                                            value="{{ article['title'] }}">
+                                                                        <input type="hidden" name="article_link"
+                                                                               value="{{ article['link'] }}"/>
+                                                                        <input type="hidden" name="tag_id"
+                                                                               value="{{ tag_group.id }}"/>
+                                                                        <input type="hidden" name="article_desc"
+                                                                               value="{{ article['desc'] }}"/>
+                                                                        <input type="hidden" name="source_link"
+                                                                               value="{{ website.link }}"/>
+                                                                        Add to reading list
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </li>
+                                                </li>
 
 
-                                    {% endfor %}
-                                  </div>
+                                            {% endfor %}
+                                        </div>
 
                                 </ul>
                             </div>

@@ -1,14 +1,13 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .db_models import User, RSS_Data, User_Website_Link, User_Readlist_Link, Readlist
-from werkzeug.security import generate_password_hash, check_password_hash
-from . import db
 from flask_login import login_user, login_required, logout_user, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from . import db
+from .db_models import User, RSS_Data, User_Website_Link, User_Readlist_Link, Readlist
+from .external_functions import valid_email
 
 # ---- Blueprint Registration ---- #
 auth = Blueprint('auth', __name__)
-
-
-
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -32,7 +31,7 @@ def login():
     # If user is already logged in, redirect to home
     if current_user.is_authenticated:
         return redirect(url_for('views.home'))
-    if request .method == 'POST':
+    if request.method == 'POST':
         # If post request received from webpage, queries these specific variables from form
         email = request.form.get('email')
         password = request.form.get('password')
@@ -78,6 +77,7 @@ def logout():
     # Returns the user to the login page
     return redirect(url_for('auth.login'))
 
+
 @auth.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -119,6 +119,7 @@ def profile():
     # Returns user to profile page
     return render_template("profile.html", user=current_user)
 
+
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
     """The signup function called when a user creates an account.
@@ -154,8 +155,8 @@ def sign_up():
         # Checks for each condition and flashes an error if condition true
         if user:
             flash('Email already exists', category='error')
-        elif len(email) < 4:
-            flash('Email must be greater than 3 characters', category='error')
+        elif valid_email(email) is False:
+            flash('Email is invalid', category='error')
         elif len(username) < 2:
             flash('Username must be greater than 2 characters', category='error')
         elif password_1 != password_2:
@@ -173,7 +174,7 @@ def sign_up():
             flash('Account created', category='success')
             return redirect(url_for('views.discover'))
 
-    return render_template("sign_up.html",user=current_user)
+    return render_template("sign_up.html", user=current_user)
 
 
 @auth.route('/delete-account', methods=['POST'])
@@ -196,24 +197,23 @@ def delete_account():
     None : Returns user to login page
 
     """
-
+    # Retrieves the uid fo the account
     user_id = request.form.get('account_id')
+
     # Retrieves all websites and articles that the user has saved (won't be stored when account is deleted)
     user_websites = User_Website_Link.query.filter_by(user_id=user_id).all()
     user_articles = User_Readlist_Link.query.filter_by(user_id=user_id).all()
+
     # If there is only one user with the article, it deletes the article
     for article in user_articles:
         article_existence = Readlist.query.get(article.readlist_id)
-        print(article_existence.users)
         if len(article_existence.users) == 1:
             db.session.delete(article_existence)
         db.session.delete(article)
 
     # If there is only one user with the website, it deletes the website (in case personal websites are added)
     for website in user_websites:
-        print(website)
         website_existence = RSS_Data.query.get(website.rss_data_id)
-        print(website_existence.users)
         if len(website_existence.users) == 1:
             db.session.delete(website_existence)
         db.session.delete(website)
@@ -224,6 +224,5 @@ def delete_account():
 
     db.session.delete(del_user)
     db.session.commit()
-
+    # Redirects user to login page
     return redirect(url_for('auth.login'))
-

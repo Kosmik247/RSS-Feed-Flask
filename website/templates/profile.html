@@ -14,17 +14,20 @@
     <form method="POST">
         <div>
             <label for="password_1">New_Password</label>
-            <input type="password" class="form-control" id="password_1" name="password_1" placeholder="Enter a new password"/>
+            <input type="password" class="form-control" id="password_1" name="password_1"
+                   placeholder="Enter a new password"/>
         </div>
         <div class="form-group">
             <label for="password_2">Password (Confirm)</label>
-            <input type="password" class="form-control" id="password_2" name="password_2" placeholder="Repeat your new password"/>
+            <input type="password" class="form-control" id="password_2" name="password_2"
+                   placeholder="Repeat your new password"/>
         </div>
-        <br />
+        <br/>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     <br/>
-    <br/> <!-- A measure to ensure that the user does not accidentally hit the delete account button instead of submit article button.-->
+    <br/>
+    <!-- A measure to ensure that the user does not accidentally hit the delete account button instead of submit article button.-->
     <br/>
     <br/>
     <br/>
@@ -34,10 +37,10 @@
     <br/>
     <div>
         <form action="/delete-account" method="POST">
-                <button name="delete_account" class="btn btn-danger" type="submit">
-                    <input type="hidden" name="account_id" value="{{ current_user.id }}" />
-                    DELETE ACCOUNT
-                </button>
+            <button name="delete_account" class="btn btn-danger" type="submit">
+                <input type="hidden" name="account_id" value="{{ current_user.id }}"/>
+                DELETE ACCOUNT
+            </button>
         </form>
     </div>
 

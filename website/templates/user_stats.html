@@ -5,13 +5,14 @@
         <!-- Using google charts to draw data charts for my personal use -->
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <script type="text/javascript">
-            google.charts.load("current", {packages: ["corechart","bar"]});
+            google.charts.load("current", {packages: ["corechart", "bar"]});
             google.charts.setOnLoadCallback(draw_charts);
 
             function draw_charts() {
-            draw_pie_chart();
-            draw_bar_chart();
+                draw_pie_chart();
+                draw_bar_chart();
             }
+
             let tags = {{ named_tags | tojson | safe }}; // Get the list of tag names
             let stats_data = {{ stats_data | tojson | safe }}; // Get the tag statistics data
             let global_tags_id = {{ id_tags | tojson | safe }}; // Get the list of tag IDs
@@ -43,6 +44,7 @@
                 let chart = new google.visualization.PieChart(document.getElementById('piechart'));
                 chart.draw(data, options);
             }
+
             function draw_bar_chart() {
                 let data = new google.visualization.DataTable();
                 data.addColumn('string', 'Tag');
@@ -51,9 +53,9 @@
 
                 let chartData = [];
                 for (let i = 0; i < tags.length; i++) {
-                    let tag = tags[i];
-                    let global = global_clicks[i+1];
-                    let user = stats_data[i+1];
+                    let tag = tags[i + 1];
+                    let global = global_clicks[i + 1];
+                    let user = stats_data[i + 1];
 
 
                     chartData.push([tag, global, user]);
@@ -61,15 +63,15 @@
                 data.addRows(chartData);
 
                 var options = {
-                  chart: {
-                    title: 'Global VS User Tag Interactions',
-                  }
+                    chart: {
+                        title: 'Global VS User Tag Interactions',
+                    }
                 };
 
                 var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
 
                 chart.draw(data, google.charts.Bar.convertOptions(options));
-              }
+            }
         </script>
     </head>
 
@@ -83,21 +85,21 @@
                     <!-- Content for the website column -->
                     <h3>Favorite Websites</h3>
                     <p>Here are the websites you've interacted with the most.</p>
-                <div>
-                    {% for website in websites %}
-                        <div class="border border-dark">
-                            <h5>Title: {{ website.rss_data.title }}</h5>
-                            <h5 class="text-muted">Interactions: {{ website.clicks }}</h5>
-                            {% for tag in global_tags %}
-                                {% if tag.id == website.rss_data.tag_id %}
-                                <h5 class="text-muted">Tag: {{ tag.name }}</h5>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                        <br>
+                    <div>
+                        {% for website in websites %}
+                            <div class="border border-dark">
+                                <h5>Title: {{ website.rss_data.title }}</h5>
+                                <h5 class="text-muted">Interactions: {{ website.clicks }}</h5>
+                                {% for tag in global_tags %}
+                                    {% if tag.id == website.rss_data.tag_id %}
+                                        <h5 class="text-muted">Tag: {{ tag.name }}</h5>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <br>
 
-                    {% endfor %}
-                </div>
+                        {% endfor %}
+                    </div>
 
                 </div>
             </div>
@@ -115,20 +117,22 @@
                     <h3>Global Tag Interactions</h3>
 
                     <div id="columnchart_material" class="chart" style="width: 700px; height: 500px;">
+                    </div>
                 </div>
+
             </div>
-
         </div>
-    </div>
 
-    <!-- Bootstrap core JavaScript
-        ================================================== -->
+        <!-- Bootstrap core JavaScript
+            ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+                crossorigin="anonymous"></script>
         <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
-                </div>
-            </div>
-        </div>
+    </div>
+    </div>
+    </div>
     </div>
 
 

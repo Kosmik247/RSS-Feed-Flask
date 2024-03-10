@@ -27,13 +27,13 @@
                 <a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a>
             {% endif %}
             {% if user.id == 1 %}
-                    <a class="nav-item nav-link" id="admin" href="/admin">Admin Dashboard</a>
+                <a class="nav-item nav-link" id="admin" href="/admin">Admin Dashboard</a>
             {% endif %}
         </div>
         {% if user.is_authenticated %}
             <div class="navbar-nav ms-auto">
                 <a class="nav-item nav-link " id="profile" href="/profile">Profile: Welcome {{ user.username }}</a>
-            <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+                <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
             </div>
 
         {% endif %}

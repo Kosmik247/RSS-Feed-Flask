@@ -3,114 +3,120 @@
 {% block content %}
 
 
-<!-- Sidebar -->
-<div class="container-fluid">
-    <div class="row">
-      <nav class="col-12 col-md-2 bg-light sidebar">
-        <div>
-          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-            <span>Saved Websites</span>
-            <a class="d-flex align-items-center text-muted" href="/add_links">
-              <span data-feather="plus-circle"></span>
-            </a>
-          </h6>
+    <!-- Sidebar -->
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-12 col-md-2 bg-light sidebar">
+                <div>
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Saved Websites</span>
+                        <a class="d-flex align-items-center text-muted" href="/add_links">
+                            <span data-feather="plus-circle"></span>
+                        </a>
+                    </h6>
 
-        <div>
-        <h6>
-        {% for tag in tags %}
+                    <div>
+                        <h6>
+                            {% for tag in tags %}
 
-            <div class="panel-group">
-              <div class="panel panel-default">
-                <div class="panel-heading ">
-                  <h6 class="panel-title px-3 mt-4">
-                    <a data-toggle="collapse" href="#collapse{{ tag['tag_id'] }}" class="show text-muted">
-                        <span>{{ tag['tag_name'] }}</span>
-                        <span data-feather="chevron-down" class="text-muted "></span>
-                    </a>
-                  </h6>
+                                <div class="panel-group">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading ">
+                                            <h6 class="panel-title px-3 mt-4">
+                                                <a data-toggle="collapse" href="#collapse{{ tag['tag_id'] }}"
+                                                   class="show text-muted">
+                                                    <span>{{ tag['tag_name'] }}</span>
+                                                    <span data-feather="chevron-down" class="text-muted "></span>
+                                                </a>
+                                            </h6>
+                                        </div>
+                                        <div id="collapse{{ tag['tag_id'] }}" class="panel-collapse collapse">
+                                            <form method="POST" action="/">
+                                                <ul class="list-group list-group-flush">
+                                                    {% for feed in user.rss_data %}
+
+                                                        {% if feed.rss_data.tag_id == tag['tag_id'] %}
+
+                                                            <li class="list-group-item">
+                                                                <button type="submit" class="btn btn-link border"
+                                                                        name="website_id"
+                                                                        value="{{ feed.rss_data.id }}">{{ feed.rss_data.title }}</button>
+                                                                <input type="hidden" name="feed_link"/>
+                                                            </li>
+                                                            <!-- Modifying the attribute btn btn-link will change what type of button appears for each individual website.-->
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% endfor %}
+
+
+                        </h6>
+
+
+                    </div>
                 </div>
-                <div id="collapse{{ tag['tag_id'] }}" class="panel-collapse collapse">
-                  <form method="POST" action="/">
-                    <ul class="list-group list-group-flush">
-                      {% for feed in user.rss_data %}
+            </nav>
 
-                          {% if feed.rss_data.tag_id == tag['tag_id']%}
+            <main role="main" class="col">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-left pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">News Feed</h1>
 
-                              <li class="list-group-item">
-                              <button type="submit" class="btn btn-link border" name="website_id" value="{{ feed.rss_data.id }}">{{ feed.rss_data.title }}</button>
-                                <input type="hidden" name="feed_link"/>
-                            </li>
-                          <!-- Modifying the attribute btn btn-link will change what type of button appears for each individual website.-->
-                          {% endif %}
-                      {% endfor %}
-                  </ul>
-                </form>
                 </div>
-              </div>
-            </div>
+                <h6 class="h6 text-muted">Select website from the dropdown</h6>
+                <div class="row">
+                    {% for article in feeds %}
+                        <div class="col-sm-5">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ article['title'] }}</h5>
+                                    {% if article['description'] == None %}
+                                        <p class="card-text">No description for the article could be found.</p>
+                                    {% else %}
+                                        <p class="card-text">{{ article['description'] }}</p>
+                                    {% endif %}
 
-        {% endfor %}
 
+                                    <a href="{{ article['link'] }}" class="btn btn-primary">Go to article</a>
+                                    <form action="/" method="POST">
+                                        <button name="art_tag_id" class="btn btn-secondary" type="submit"
+                                                value={{ website.tag.id }}>
+                                            <input type="hidden" name="article_title"
+                                                   value="{{ article.get('title') }}"/>
+                                            <input type="hidden" name="article_link" value="{{ article.get('link') }}"/>
+                                            <input type="hidden" name="article_desc"
+                                                   value="{{ article.get('description') }}"/>
+                                            <input type="hidden" name="website_id" value="{{ website.id }}"/>
+                                            Add to reading list
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
 
-
-        </h6>
-
-
-
+                </div>
+            </main>
         </div>
-        </div>
-      </nav>
-
-      <main role="main" class="col">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-left pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">News Feed</h1>
-
-        </div>
-        <h6 class="h6 text-muted">Select website from the dropdown</h6>
-          <div class="row">
-          {% for article in feeds %}
-          <div class="col-sm-5">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">{{ article['title'] }}</h5>
-                  {% if article['description'] == None %}
-                      <p class="card-text">No description for the article could be found.</p>
-                  {% else %}
-                      <p class="card-text">{{ article['description'] }}</p>
-                  {% endif %}
-
-
-                <a href="{{ article['link'] }}" class="btn btn-primary">Go to article</a>
-                  <form action="/" method="POST">
-                    <button name="art_tag_id" class="btn btn-secondary" type="submit" value={{ website.tag.id }}>
-                        <input type="hidden" name="article_title" value="{{ article.get('title') }}"/>
-                        <input type="hidden" name="article_link" value="{{ article.get('link') }}"/>
-                        <input type="hidden" name="article_desc" value="{{ article.get('description') }}"/>
-                        <input type="hidden" name="website_id" value="{{ website.id }}"/>
-                        Add to reading list
-                    </button>
-                </form>
-              </div>
-            </div>
-          </div>
-          {% endfor %}
-
-        </div>
-      </main>
     </div>
-  </div>
 
-<!-- Bootstrap core JavaScript
-        ================================================== -->
-        <!-- Placed at the end of the document so the pages load faster -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <!-- Bootstrap core JavaScript
+            ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
 
 
-        <!-- Icons -->
-        <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
-        <script>
-            feather.replace()
-        </script>
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>
+        feather.replace()
+    </script>
 
 {% endblock %}

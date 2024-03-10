@@ -1,7 +1,7 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from os import path
+from flask_sqlalchemy import SQLAlchemy
+
 # ---- Init file for website module ---- #
 
 # Initialises database class
@@ -32,7 +32,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'sdadad hasdkjhsd akjhksdh'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///main_database.db'
     # DEBUGGING
-    app.config["SQLALCHEMY_ECHO"] = True
+    # app.config["SQLALCHEMY_ECHO"] = True
 
     db.init_app(app)
     # Import of all database models for program use and initialises it in the database
@@ -76,4 +76,3 @@ def database_intialisation(app):
     # Loads the database and creates the table if they weren't created before.
     with app.app_context():
         db.create_all()
-

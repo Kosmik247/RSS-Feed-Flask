@@ -1,17 +1,18 @@
-from flask import Blueprint, redirect, url_for
-from .db_models import Tags, User_Interaction
-
 from datetime import timedelta
-from flask_login import current_user
+
+from flask import Blueprint, redirect, url_for
 from flask_admin import AdminIndexView, expose
+from flask_login import current_user
+
+from .db_models import Tags, User_Interaction
 
 # Registers the blueprint within the flask application
 admin_dashboard = Blueprint('admin_dashboard', __name__)
 
+
 class Admin_View(AdminIndexView):
 
     @expose('/')
-
     def index(self):
         """The function behind the main index file in the flask admin view.
 
@@ -38,10 +39,6 @@ class Admin_View(AdminIndexView):
         return self.render('admin/index.html', user_activity=activity, tags=global_tags_named)
 
 
-
-
-
-
 def time_difference_calc():
     """The function that calculates the difference in time between user interactions and their tags.
         Variables
@@ -56,49 +53,61 @@ def time_difference_calc():
         Returns
         -------
         returns date_lol
+
+        Note
+        -------
+        This function aggregates together all interactions by week (start of week) to allow for easier trend overviews
     """
+    # pulls all user interactions
     activity_data = User_Interaction.query.all()
     global_activity = {}
+
+    # Loops through every interaction
     for interaction in activity_data:
+        # Groups data together week by week for easier trend overviews.
         date = interaction.time_of_interaction
         time_difference = date - timedelta(days=date.weekday())
         formatted_time = time_difference.strftime('%Y-%m-%d')
 
+        # If the tag is not in the dict, it creates a new entry
         if interaction.tag not in global_activity:
             global_activity[interaction.tag] = {'date': formatted_time, 'interactions': 1}
+        # If it is, it just adds one to the entry
         else:
             global_activity[interaction.tag]['interactions'] += 1
 
+    # Setting up chart
     chart_data = [['Date', 'Interaction Count', 'Tag']]
+    # Loops through to append all week interactions
     for data in global_activity:
-
         chart_data.append([global_activity[data]['date'], global_activity[data]['interactions'], data.name])
 
+    # Setting up dictionary for date
     date_dictionary = {}
+    # For loop organising data by date
     for data_list in chart_data[1:]:
         if data_list[0] not in date_dictionary:
             date_dictionary[data_list[0]] = [{data_list[2]: data_list[1]}]
         else:
-
             date_dictionary[data_list[0]].append({data_list[2]: data_list[1]})
-    tags = list({tag for date_data in date_dictionary.values() for tag_dictionary in date_data for tag in tag_dictionary})
+    # Unique tags are pulled
+    tags = list(
+        {tag for date_data in date_dictionary.values() for tag_dictionary in date_data for tag in tag_dictionary})
 
     # Create a list of lists with default values
     date_lol = [['Date'] + tags]
 
+    # Adding interaction counts for each tag per date
     for date, tag_data_list in date_dictionary.items():
 
+        # Initialising the list with zeros
         values = [0] * len(tags)
-
         for tag_data in tag_data_list:
-            print(tag_data)
             for tag_name, value in tag_data.items():
-                print(tag_name)
-                print(value)
+                # Replaces the zero default value with the tag interaction count
                 values[tags.index(tag_name)] = value
 
         # Append the date and values to the result list
         date_lol.append([date] + values)
 
-    print(date_lol)
     return date_lol

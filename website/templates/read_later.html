@@ -11,56 +11,61 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand">Filter by:</a>
 
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarText">
-          <form action="/read_later" method="POST">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                        <button name="filter_articles" class="btn btn-outline-dark btn-lg" type="submit" value="{{ None }}">All</button>
-                    </li>
-                {% for tag in tags %}
-                    <li class="nav-item">
-                        <button name="filter_article" class="btn btn-outline-dark btn-lg" type="submit" value={{ tag.tag_id }}>
-                            {{ tag.tag_name }}
-                        </button>
-                    </li>
-                {% endfor %}
-            </ul>
-     </form>
-      </div>
-    </nav>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+                    aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarText">
+                <form action="/read_later" method="POST">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <button name="filter_articles" class="btn btn-outline-dark btn-lg" type="submit"
+                                    value="{{ None }}">All
+                            </button>
+                        </li>
+                        {% for tag in filter_tags %}
+                            <li class="nav-item">
+                                <button name="filter_article" class="btn btn-outline-dark btn-lg" type="submit"
+                                        value={{ tag.tag_id }}>
+                                    {{ tag.tag_name }}
+                                </button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </form>
+            </div>
+        </nav>
     </h3>
     <div class="row">
-    {% for tag in tags %}
-        <h3>{{ tag.tag_name }}</h3>
+        {% for tag in tags %}
+            <h3>{{ tag.tag_name }}</h3>
 
-                    {% for article in user.readlist %}
-                        {% if article.readlist.tag_id == tag['tag_id'] %}
-                            <div class="col-sm-5">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ article.readlist.art_title }}</h5>
-                                    {% if article.readlist.art_desc == None %}
-                                        <p class="card-text">No description for the article could be found.</p>
-                                    {% else %}
-                                        <p class="card-text">{{ article.readlist.art_desc }}</p>
-                                    {% endif %}
+            {% for article in user.readlist %}
+                {% if article.readlist.tag_id == tag['tag_id'] %}
+                    <div class="col-sm-5">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ article.readlist.art_title }}</h5>
+                                {% if article.readlist.art_desc == None %}
+                                    <p class="card-text">No description for the article could be found.</p>
+                                {% else %}
+                                    <p class="card-text">{{ article.readlist.art_desc }}</p>
+                                {% endif %}
 
-                                    <a href="{{ article.readlist.art_link }}" class="btn btn-primary">Go to article</a>
-                                    <form action="/read_later" method="POST">
-                                        <button name="unlike_article" class="btn btn-danger" type="submit" value="{{ article.readlist.id }}">
-                                            Remove from reading list
-                                        </button>
-                                    </form>
-                                </div>
+                                <a href="{{ article.readlist.art_link }}" class="btn btn-primary">Go to article</a>
+                                <form action="/read_later" method="POST">
+                                    <button name="unlike_article" class="btn btn-danger" type="submit"
+                                            value="{{ article.readlist.id }}">
+                                        Remove from reading list
+                                    </button>
+                                </form>
                             </div>
                         </div>
-                        {% endif %}
+                    </div>
+                {% endif %}
 
-                    {% endfor %}
-                {% endfor %}
-        </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
     </div>
 {% endblock %}
