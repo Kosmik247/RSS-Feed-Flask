@@ -68,38 +68,44 @@
 
                 </div>
                 <h6 class="h6 text-muted">Select website from the dropdown</h6>
-                <div class="row">
-                    {% for article in feeds %}
-                        <div class="col-sm-5">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ article['title'] }}</h5>
-                                    {% if article['description'] == None %}
-                                        <p class="card-text">No description for the article could be found.</p>
-                                    {% else %}
-                                        <p class="card-text">{{ article['description'] }}</p>
-                                    {% endif %}
+                {% if feeds %}
+                    <div class="row">
+                        {% for article in feeds %}
+                            <div class="col-sm-5">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ article['title'] }}</h5>
+                                        {% if article['description'] == None %}
+                                            <p class="card-text">No description for the article could be found.</p>
+                                        {% else %}
+                                            <p class="card-text">{{ article['description'] }}</p>
+                                        {% endif %}
 
 
-                                    <a href="{{ article['link'] }}" class="btn btn-primary">Go to article</a>
-                                    <form action="/" method="POST">
-                                        <button name="art_tag_id" class="btn btn-secondary" type="submit"
-                                                value={{ website.tag.id }}>
-                                            <input type="hidden" name="article_title"
-                                                   value="{{ article.get('title') }}"/>
-                                            <input type="hidden" name="article_link" value="{{ article.get('link') }}"/>
-                                            <input type="hidden" name="article_desc"
-                                                   value="{{ article.get('description') }}"/>
-                                            <input type="hidden" name="website_id" value="{{ website.id }}"/>
-                                            Add to reading list
-                                        </button>
-                                    </form>
+                                        <a href="{{ article['link'] }}" class="btn btn-primary">Go to article</a>
+                                        <form action="/" method="POST">
+                                            <button name="art_tag_id" class="btn btn-secondary" type="submit"
+                                                    value={{ website.tag.id }}>
+                                                <input type="hidden" name="article_title"
+                                                       value="{{ article.get('title') }}"/>
+                                                <input type="hidden" name="article_link"
+                                                       value="{{ article.get('link') }}"/>
+                                                <input type="hidden" name="article_desc"
+                                                       value="{{ article.get('description') }}"/>
+                                                <input type="hidden" name="website_id" value="{{ website.id }}"/>
+                                                Add to reading list
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <h5>No website has been selected, or the selected website does not have valid articles to
+                        parse.</h5>
+                {% endif %}
 
-                </div>
             </main>
         </div>
     </div>
