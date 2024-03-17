@@ -459,7 +459,7 @@ def user_stats():
     # Limits the websites recommended to 4
     user_websites = User_Website_Link.query.filter_by(user_id=current_user.id).order_by(
         User_Website_Link.clicks.desc()).limit(4)
-
+    print(current_user.rss_data)
     return render_template("user_stats.html", user=current_user, stats_data=stats_data, global_tags=global_tags,
                            named_tags=global_tags_named, id_tags=global_tags_id, websites=user_websites,
                            global_clicks=global_tag_clicks)

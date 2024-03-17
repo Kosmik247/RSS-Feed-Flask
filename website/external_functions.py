@@ -60,15 +60,14 @@ def weighted_calculation():
         # Calculating how recently the user interacted with the website
         time_difference = datetime.now() - interaction.time_of_interaction
         recent_factor = 1 / (
-                    1 + recent_weight * time_difference.total_seconds())  # Add another divider to decrease effect
-
+                1 + recent_weight * time_difference.total_seconds())  # Add another divider to decrease effect (decreasing effect means less noticeable change from one interaction)
         # Calculates weight for the tag
         tag_weights_calc = weight * recent_factor
 
         if interaction.tag in tag_weights:
             # Replaces the default of 0 with the tag weight calculated
             tag_weights[interaction.tag] += tag_weights_calc
-
+    print(tag_weights)
     return tag_weights
 
 

@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from flask import Blueprint, redirect, url_for
 from flask_admin import AdminIndexView, expose
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from .db_models import Tags, User_Interaction
 
@@ -13,6 +13,7 @@ admin_dashboard = Blueprint('admin_dashboard', __name__)
 class Admin_View(AdminIndexView):
 
     @expose('/')
+    @login_required
     def index(self):
         """The function behind the main index file in the flask admin view.
 

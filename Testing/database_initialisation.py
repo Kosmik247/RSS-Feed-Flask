@@ -1,23 +1,28 @@
-from website import db
-from website.db_models import User, Tags, User_Website_Link, RSS_Data
-from werkzeug.security import generate_password_hash
 import csv
 from os import path
-from website import create_app
-app = create_app()
-def database_intialisation():
-    """
 
-    """
+from werkzeug.security import generate_password_hash
+
+from website import create_app
+from website import db
+from website.db_models import User, Tags, User_Website_Link, RSS_Data
+
+app = create_app()
+
+
+def database_intialisation():
+    """When this function is run, it creates the database, adds testing data and creates a test admin account"""
+
     with app.app_context():
         db.create_all()
+        # Checks if admin user account details exists
         admin_user_existence = User.query.filter_by(email="sysadmin@gmail.com", username="sysadmin").first()
 
         # If admin account has not been made, it creates the account and runs the rest of the creation program.
         if not admin_user_existence:
 
             # Creates user instance and adds it to the database
-             # ---- NOTE ---- # ADMIN PASSWORD IS HARD CODED: REPLACE 1234567 WITH PASSWORD DESIRED
+            # ---- NOTE ---- # ADMIN PASSWORD IS HARD CODED: REPLACE 1234567 WITH PASSWORD DESIRED - OR FIRST ACCOUNT CREATED
             admin_user = User(email="sysadmin@gmail.com", username="sysadmin", password=generate_password_hash(
                 "1234567"))
             db.session.add(admin_user)
@@ -41,11 +46,12 @@ def database_intialisation():
                     db.session.add(automatic_rss_data)
             db.session.commit()
 
-            # Gets websites from database and automatically links every one to the admin account
+            # Gets websites from database and automatically links every one to the admin account to prevent them from being deleted
             websites = RSS_Data.query.all()
             for website in websites:
                 default_user_link = User_Website_Link(user_id=admin_user.id, rss_data_id=website.id, clicks=0)
                 db.session.add(default_user_link)
             db.session.commit()
+
 
 database_intialisation()

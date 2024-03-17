@@ -3,7 +3,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import db
-from .db_models import User, RSS_Data, User_Website_Link, User_Readlist_Link, Readlist
+from .db_models import User, RSS_Data, User_Website_Link, User_Readlist_Link, Readlist, User_Interaction
 from .external_functions import valid_email
 
 # ---- Blueprint Registration ---- #
@@ -144,6 +144,8 @@ def sign_up():
           Returns user to signup page if unsuccessful
 
     """
+    if current_user.is_authenticated:
+        return redirect(url_for('views.home'))
     if request.method == 'POST':
         # Retrieving form attributes
         email = request.form.get('email')
@@ -217,6 +219,11 @@ def delete_account():
         if len(website_existence.users) == 1:
             db.session.delete(website_existence)
         db.session.delete(website)
+
+    # Retrieves all interactions built up by the user and deletes them
+    user_interactions = User_Interaction.query.filter_by(user_id=current_user.id).all()
+    for interaction in user_interactions:
+        db.session.delete(interaction)
 
     # Logs user out and deletes user from database
     del_user = User.query.get(user_id)

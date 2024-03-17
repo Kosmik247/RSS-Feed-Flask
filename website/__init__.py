@@ -31,13 +31,13 @@ def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'sdadad hasdkjhsd akjhksdh'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///main_database.db'
-    # DEBUGGING
+    # DEBUGGING - Shows the SQLAlchemy SQl logs when enabled
     # app.config["SQLALCHEMY_ECHO"] = True
 
     db.init_app(app)
     # Import of all database models for program use and initialises it in the database
     from .db_models import User, RSS_Data, User_Website_Link, Tags
-    database_intialisation(app)
+    database_initialisation(app)
     # Initialisation of each page index file as a blueprint
     from .views import views
     from .auth import auth
@@ -60,7 +60,7 @@ def create_app():
     return app
 
 
-def database_intialisation(app):
+def database_initialisation(app):
     """The function run when the flask app is initialised.
 
     Variables

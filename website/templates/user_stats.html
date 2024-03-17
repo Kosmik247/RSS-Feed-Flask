@@ -52,7 +52,7 @@
                 data.addColumn('number', 'User');
 
                 let chartData = [];
-                for (let i = 0; i < tags.length; i++) {
+                for (let i = 0; i < tags.length - 1; i++) {
                     let tag = tags[i + 1];
                     let global = global_clicks[i + 1];
                     let user = stats_data[i + 1];
