@@ -18,7 +18,7 @@ year course.
 4. Set up a virtual environment -> information on how to can be
    found [here](https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/)
 5. In the virtual environment, run ``~ pip install -r requirements.txt``
-6. For the first time usage, run ``Testing/account_setup.py``
+6. For the first time usage, run ``Testing/database_initialisation.py``
 7. Then run ``main.py``
 
 # Using the website
